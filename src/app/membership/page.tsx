@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/layout/BackToTop";
 import Button from "@/components/ui/Button";
+import Logo from "@/components/ui/Logo";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useToast } from "@/hooks/useToast";
 import { membershipFormSchema, MembershipFormData } from "@/lib/validations";
@@ -191,6 +192,9 @@ export default function MembershipPage() {
           </Link>
 
           <div className="text-center mb-10">
+            <div className="flex justify-center mb-6">
+              <Logo size="xl" />
+            </div>
             <h1 className="text-3xl md:text-4xl font-bold text-charcoal mb-4">
               Membership Application
             </h1>

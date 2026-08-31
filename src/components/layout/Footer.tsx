@@ -1,5 +1,6 @@
 import { CONTACT, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import { FacebookIcon, YoutubeIcon, TikTokIcon } from "@/components/ui/SocialIcons";
+import Logo from "@/components/ui/Logo";
 import { Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 
@@ -9,6 +10,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
+            <Logo size="lg" className="mb-5" />
             <h3 className="text-white font-bold text-lg mb-4">Association</h3>
             <p className="text-sm leading-relaxed mb-4">
               {SITE_NAME} — {SITE_TAGLINE}

@@ -1,6 +1,7 @@
 export const SITE_NAME = "Men's Hairdressing & Grooming Association";
 export const SITE_SHORT_NAME = "EBOA";
 export const SITE_TAGLINE = "Modern Skills. Healthy Professionals. Stronger Community.";
+export const LOGO_PATH = "/images/eboa-logo.png";
 
 export const CONTACT = {
   phone: "+251911237470",

@@ -36,6 +36,11 @@ export const metadata: Metadata = {
       "Modern Skills. Healthy Professionals. Stronger Community. Join Ethiopia's premier men's grooming professional association.",
     type: "website",
     locale: "en_US",
+    images: ["/images/eboa-logo.png"],
+  },
+  icons: {
+    icon: "/images/eboa-logo.png",
+    apple: "/images/eboa-logo.png",
   },
 };
 

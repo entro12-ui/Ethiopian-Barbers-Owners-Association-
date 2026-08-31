@@ -1,8 +1,9 @@
 "use client";
 
 import { cn, scrollToSection } from "@/lib/utils";
-import { NAV_LINKS, SITE_SHORT_NAME } from "@/lib/constants";
-import { Menu, X, Scissors } from "lucide-react";
+import { NAV_LINKS } from "@/lib/constants";
+import Logo from "@/components/ui/Logo";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
@@ -44,20 +45,10 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <button
             onClick={() => handleNavClick("#home")}
-            className="flex items-center gap-2 group"
+            className="group"
             aria-label="Go to homepage"
           >
-            <div className="w-10 h-10 bg-gold rounded-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Scissors className="w-5 h-5 text-charcoal" />
-            </div>
-            <div className="hidden sm:block text-left">
-              <span className="block text-white font-bold text-sm leading-tight">
-                {SITE_SHORT_NAME}
-              </span>
-              <span className="block text-gold text-xs tracking-wider">
-                Ethiopia
-              </span>
-            </div>
+            <Logo size="md" priority className="group-hover:scale-[1.02] transition-transform" />
           </button>
 
           <div className="hidden xl:flex items-center gap-1">
