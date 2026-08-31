@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Render free tier: avoid broken images from the Next.js image optimizer
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

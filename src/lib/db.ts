@@ -1,17 +1,19 @@
 import { Pool, PoolClient } from "pg";
+import { getDatabaseSsl } from "@/lib/db-config";
 
 let pool: Pool | null = null;
 let initialized = false;
 
 export function getPool(): Pool {
-  if (!process.env.DATABASE_URL) {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+      connectionString,
+      ssl: getDatabaseSsl(connectionString),
       max: 10,
     });
   }
