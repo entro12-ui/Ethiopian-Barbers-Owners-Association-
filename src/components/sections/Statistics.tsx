@@ -10,10 +10,8 @@ interface StatItem {
 }
 
 const defaultStats: StatItem[] = [
-  { value: 0, label: "Professional Members" },
-  { value: 0, label: "Training Programs" },
-  { value: 0, label: "Community Events" },
-  { value: 0, label: "Years of Professional Development" },
+  { value: 0, label: "Barbers" },
+  { value: 0, label: "Barbershop Owners" },
 ];
 
 export default function Statistics() {
@@ -28,10 +26,8 @@ export default function Statistics() {
 
         const data = await response.json();
         setStats([
-          { value: data.professionalMembers, label: "Professional Members" },
-          { value: data.trainingPrograms, label: "Training Programs" },
-          { value: data.communityEvents, label: "Community Events" },
-          { value: data.yearsOfDevelopment, label: "Years of Professional Development" },
+          { value: data.barbers, label: "Barbers" },
+          { value: data.barbershopOwners, label: "Barbershop Owners" },
         ]);
       } catch {
         // Keep zeros if API unavailable
@@ -65,7 +61,7 @@ export default function Statistics() {
           </p>
         </AnimatedCard>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+        <div className="grid grid-cols-2 gap-8 md:gap-12 max-w-2xl mx-auto">
           {stats.map((stat) => (
             <AnimatedCounter
               key={stat.label}

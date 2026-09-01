@@ -1,8 +1,6 @@
 import Image from "next/image";
+import { LOGO_ALT, LOGO_PATH } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-const LOGO_PATH = "/images/eboa-logo.png";
-const LOGO_ALT = "Ethiopian Barbers and Owners Association logo";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -12,9 +10,9 @@ interface LogoProps {
 
 const sizes = {
   sm: { image: 40, className: "w-10 h-10" },
-  md: { image: 52, className: "w-12 h-12" },
-  lg: { image: 64, className: "w-16 h-16" },
-  xl: { image: 96, className: "w-24 h-24" },
+  md: { image: 56, className: "w-14 h-14" },
+  lg: { image: 72, className: "w-[4.5rem] h-[4.5rem]" },
+  xl: { image: 112, className: "w-28 h-28" },
 };
 
 export default function Logo({ size = "md", className, priority = false }: LogoProps) {
@@ -23,7 +21,7 @@ export default function Logo({ size = "md", className, priority = false }: LogoP
   return (
     <div
       className={cn(
-        "relative shrink-0 rounded-full overflow-hidden ring-2 ring-gold/30 shadow-lg shadow-black/20 hover:ring-gold/60 transition-all",
+        "relative shrink-0 rounded-full overflow-hidden ring-2 ring-gold/40 shadow-lg shadow-black/25 hover:ring-gold/70 transition-all",
         config.className,
         className
       )}

@@ -5,6 +5,8 @@ export const SITE_TAGLINE = "Modern Skills. Healthy Professionals. Stronger Comm
 export const SITE_DESCRIPTION =
   "A professional association dedicated to modernizing men's barbering and grooming in Ethiopia through professional development, workplace safety, health awareness, and community development.";
 export const LOGO_PATH = "/images/eboa-logo.png";
+export const LOGO_OG_PATH = "/images/eboa-logo-og.png";
+export const LOGO_ALT = "Ethiopian Barbers & Owners Association logo";
 
 export const CONTACT = {
   phone: "+251911237470",

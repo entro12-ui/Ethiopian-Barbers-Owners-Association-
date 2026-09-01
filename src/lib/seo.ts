@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LOGO_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_SHORT_NAME } from "@/lib/constants";
+import { LOGO_ALT, LOGO_OG_PATH, LOGO_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_SHORT_NAME } from "@/lib/constants";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
@@ -30,7 +30,7 @@ export const defaultMetadata: Metadata = {
     locale: "en_ET",
     images: [
       {
-        url: LOGO_PATH,
+        url: LOGO_OG_PATH,
         width: 512,
         height: 512,
         alt: `${SITE_NAME} logo`,
@@ -41,7 +41,7 @@ export const defaultMetadata: Metadata = {
     card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
-    images: [LOGO_PATH],
+    images: [LOGO_OG_PATH],
   },
   robots: {
     index: true,
