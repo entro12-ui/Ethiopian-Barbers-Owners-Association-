@@ -1,6 +1,9 @@
-export const SITE_NAME = "Ethiopian-Barbers-and-Owners-Association";
+export const SITE_NAME = "Ethiopian Barbers & Owners Association";
 export const SITE_SHORT_NAME = "EBOA";
+export const SITE_SLUG = "ethiopian-barbers-and-owners-association";
 export const SITE_TAGLINE = "Modern Skills. Healthy Professionals. Stronger Community.";
+export const SITE_DESCRIPTION =
+  "A professional association dedicated to modernizing men's barbering and grooming in Ethiopia through professional development, workplace safety, health awareness, and community development.";
 export const LOGO_PATH = "/images/eboa-logo.png";
 
 export const CONTACT = {

@@ -4,6 +4,10 @@ import { getDatabaseSsl } from "@/lib/db-config";
 let pool: Pool | null = null;
 let initialized = false;
 
+export function isDatabaseConfigured(): boolean {
+  return Boolean(process.env.DATABASE_URL);
+}
+
 export function getPool(): Pool {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
@@ -37,7 +41,7 @@ export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>)
 }
 
 export async function initializeDatabase(): Promise<void> {
-  if (initialized) return;
+  if (initialized || !isDatabaseConfigured()) return;
 
   const client = await getPool().connect();
   try {
