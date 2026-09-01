@@ -28,7 +28,6 @@ export default function Footer() {
                 { label: "About", href: "#about" },
                 { label: "Membership", href: "#membership" },
                 { label: "Goals", href: "#goals" },
-                { label: "Events", href: "#events" },
                 { label: "Gallery", href: "#gallery" },
                 { label: "Contact", href: "#contact" },
               ].map((link) => (
@@ -45,19 +44,9 @@ export default function Footer() {
             <h3 className="text-white font-bold text-lg mb-4">Membership</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#membership-requirements" className="hover:text-gold transition-colors">
-                  Membership Requirements
-                </a>
-              </li>
-              <li>
                 <Link href="/membership" className="hover:text-gold transition-colors">
                   Apply Online
                 </Link>
-              </li>
-              <li>
-                <a href="#membership-process" className="hover:text-gold transition-colors">
-                  Membership Process
-                </a>
               </li>
             </ul>
           </div>

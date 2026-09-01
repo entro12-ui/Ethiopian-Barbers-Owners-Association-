@@ -4,31 +4,18 @@ import { withTransaction } from "@/lib/db";
 
 export type ApplicantType = "owner" | "barber";
 export type ApplicationStatus = "pending" | "under_review" | "approved" | "rejected";
-export type DocumentType =
-  | "national_id"
-  | "business_license"
-  | "coc_certificate"
-  | "work_experience"
-  | "membership_photo_1"
-  | "membership_photo_2";
 
 export interface MembershipApplicationInput {
   fullName: string;
-  dateOfBirth: string;
   phone: string;
-  email: string;
+  email?: string;
+  barbershopName: string;
   address: string;
-  city: string;
-  profession: string;
-  barbershopName?: string;
-  yearsOfExperience: number;
-  barbershopAddress?: string;
   applicantType: ApplicantType;
-  agreement: boolean;
 }
 
 export interface DocumentInput {
-  documentType: DocumentType;
+  documentType: string;
   fileName: string;
   mimeType: string;
   fileSize: number;
@@ -54,6 +41,7 @@ export async function createMembershipApplication(
 ): Promise<CreatedApplication> {
   const id = randomUUID();
   const applicationRef = generateApplicationRef();
+  const profession = data.applicantType === "owner" ? "Barbershop Owner" : "Barber";
 
   return withTransaction(async (client: PoolClient) => {
     const appResult = await client.query(
@@ -67,17 +55,17 @@ export async function createMembershipApplication(
         id,
         applicationRef,
         data.fullName,
-        data.dateOfBirth,
+        null,
         data.phone,
-        data.email.toLowerCase(),
+        data.email?.toLowerCase() || null,
         data.address,
-        data.city,
-        data.profession,
-        data.barbershopName || null,
-        data.yearsOfExperience,
-        data.barbershopAddress || null,
+        null,
+        profession,
+        data.barbershopName,
+        0,
+        null,
         data.applicantType,
-        data.agreement,
+        true,
       ]
     );
 

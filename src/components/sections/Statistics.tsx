@@ -2,9 +2,47 @@
 
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import AnimatedCard from "@/components/ui/AnimatedCard";
-import { STATS } from "@/lib/constants";
+import { useEffect, useState } from "react";
+
+interface StatItem {
+  value: number;
+  label: string;
+}
+
+const defaultStats: StatItem[] = [
+  { value: 0, label: "Professional Members" },
+  { value: 0, label: "Training Programs" },
+  { value: 0, label: "Community Events" },
+  { value: 0, label: "Years of Professional Development" },
+];
 
 export default function Statistics() {
+  const [stats, setStats] = useState<StatItem[]>(defaultStats);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const response = await fetch("/api/statistics", { cache: "no-store" });
+        if (!response.ok) throw new Error("Failed to fetch");
+
+        const data = await response.json();
+        setStats([
+          { value: data.professionalMembers, label: "Professional Members" },
+          { value: data.trainingPrograms, label: "Training Programs" },
+          { value: data.communityEvents, label: "Community Events" },
+          { value: data.yearsOfDevelopment, label: "Years of Professional Development" },
+        ]);
+      } catch {
+        // Keep zeros if API unavailable
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
   return (
     <section id="statistics" className="py-20 md:py-28 bg-charcoal relative overflow-hidden">
       <div className="absolute inset-0 opacity-5">
@@ -28,13 +66,11 @@ export default function Statistics() {
         </AnimatedCard>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-          {STATS.map((stat, i) => (
+          {stats.map((stat) => (
             <AnimatedCounter
               key={stat.label}
-              value={stat.value}
-              suffix={stat.suffix}
+              value={isLoading ? 0 : stat.value}
               label={stat.label}
-              placeholder={stat.placeholder}
             />
           ))}
         </div>

@@ -15,9 +15,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Men's Hairdressing & Grooming Association Ethiopia | Professional Barber Community",
+  title: "Ethiopian-Barbers-and-Owners-Association | Professional Barber Community",
   description:
-    "A professional association dedicated to modernizing men's hairdressing and grooming in Ethiopia through professional development, workplace safety, health awareness, and community development.",
+    "A professional association dedicated to modernizing Ethiopian-Barbers-and-Owners-Association in Ethiopia through professional development, workplace safety, health awareness, and community development.",
   keywords: [
     "Barber Association Ethiopia",
     "Men's Hairdressing Ethiopia",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "Ethiopian Hairdressers and Owners Association",
   ],
   openGraph: {
-    title: "Men's Hairdressing & Grooming Association Ethiopia",
+    title: "Ethiopian-Barbers-and-Owners-Association",
     description:
       "Modern Skills. Healthy Professionals. Stronger Community. Join Ethiopia's premier men's grooming professional association.",
     type: "website",

@@ -7,7 +7,6 @@ interface AnimatedCounterProps {
   value: number;
   suffix?: string;
   label: string;
-  placeholder?: boolean;
   duration?: number;
 }
 
@@ -15,12 +14,17 @@ export default function AnimatedCounter({
   value,
   suffix = "",
   label,
-  placeholder = false,
   duration = 2000,
 }: AnimatedCounterProps) {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (hasAnimated) {
+      setCount(value);
+    }
+  }, [value, hasAnimated]);
 
   useEffect(() => {
     const element = ref.current;
@@ -63,9 +67,6 @@ export default function AnimatedCounter({
       <div className="text-sm md:text-base text-gray-300 uppercase tracking-wider">
         {label}
       </div>
-      {placeholder && (
-        <div className="text-xs text-gray-500 mt-1 italic">*Placeholder value</div>
-      )}
     </div>
   );
 }

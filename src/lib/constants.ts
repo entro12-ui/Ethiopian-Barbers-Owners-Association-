@@ -1,4 +1,4 @@
-export const SITE_NAME = "Men's Hairdressing & Grooming Association";
+export const SITE_NAME = "Ethiopian-Barbers-and-Owners-Association";
 export const SITE_SHORT_NAME = "EBOA";
 export const SITE_TAGLINE = "Modern Skills. Healthy Professionals. Stronger Community.";
 export const LOGO_PATH = "/images/eboa-logo.png";
@@ -16,13 +16,6 @@ export const CONTACT = {
   },
 };
 
-export const STATS = [
-  { value: 500, suffix: "+", label: "Professional Members", placeholder: true },
-  { value: 50, suffix: "+", label: "Training Programs", placeholder: true },
-  { value: 20, suffix: "+", label: "Community Events", placeholder: true },
-  { value: 10, suffix: "+", label: "Years of Professional Development", placeholder: true },
-];
-
 export const NAV_LINKS = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
@@ -30,7 +23,6 @@ export const NAV_LINKS = [
   { label: "Professional Development", href: "#development" },
   { label: "Health & Safety", href: "#health-safety" },
   { label: "Membership", href: "#membership" },
-  { label: "Events", href: "#events" },
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];

@@ -2,9 +2,7 @@
 
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
-import { imagePath } from "@/lib/constants";
 import { Heart, Shield, GraduationCap, Scissors, Sparkles, Users, Wrench, Network } from "lucide-react";
-import Image from "next/image";
 
 const goals = [
   {
@@ -12,21 +10,18 @@ const goals = [
     title: "Healthcare",
     description:
       "Organize a series of sports events and Mazega activities to promote physical health, fitness, and social connection among members.",
-    image: "photo_2026-08-31_14-39-45.jpg",
   },
   {
     icon: Shield,
     title: "Workplace Safety",
     description:
       "Provide safety and hygiene training to prevent health problems caused by long hours of standing and regular workplace exposure in the hairdressing profession.",
-    image: "photo_2026-08-31_14-39-16.jpg",
   },
   {
     icon: GraduationCap,
     title: "Professional Development",
     description:
       "Introduce men's hairdressing professionals to modern technologies and international trends in hair styling, beard care, and facial care (Grooming).",
-    image: "photo_2026-08-31_14-38-47.jpg",
   },
 ];
 
@@ -53,24 +48,12 @@ export default function Goals() {
         <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-16">
           {goals.map((goal, i) => (
             <AnimatedCard key={goal.title} delay={i * 150}>
-              <div className="group relative bg-dark-gray rounded-sm overflow-hidden h-full hover:transform hover:-translate-y-2 transition-all duration-500">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={imagePath(goal.image)}
-                    alt={goal.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark-gray to-transparent" />
+              <div className="group bg-dark-gray rounded-sm p-6 md:p-8 h-full hover:transform hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-gold/30">
+                <div className="w-12 h-12 bg-gold/20 rounded-sm flex items-center justify-center mb-4 group-hover:bg-gold/30 transition-colors">
+                  <goal.icon className="w-6 h-6 text-gold" />
                 </div>
-                <div className="p-6 md:p-8">
-                  <div className="w-12 h-12 bg-gold/20 rounded-sm flex items-center justify-center mb-4 group-hover:bg-gold/30 transition-colors">
-                    <goal.icon className="w-6 h-6 text-gold" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{goal.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{goal.description}</p>
-                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{goal.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{goal.description}</p>
               </div>
             </AnimatedCard>
           ))}

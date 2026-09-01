@@ -3,9 +3,7 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
-import { imagePath } from "@/lib/constants";
 import { Scissors, Sparkles, Smile, Cpu, BookOpen } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 const features = [
@@ -60,41 +58,23 @@ export default function ProfessionalDevelopment() {
           subtitle="The association supports professional barbers through modern education and exposure to international grooming techniques."
         />
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
-          <AnimatedCard>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {features.map((feature, i) => (
-                <div
-                  key={feature.title}
-                  className="group p-6 bg-white rounded-sm border border-gray-100 hover:border-gold/30 hover:shadow-lg transition-all duration-300"
-                  style={{ animationDelay: `${i * 100}ms` }}
-                >
-                  <div className="w-10 h-10 bg-gold/10 rounded-sm flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
-                    <feature.icon className="w-5 h-5 text-gold" />
-                  </div>
-                  <h3 className="font-bold text-charcoal mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+        <AnimatedCard className="mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            {features.map((feature, i) => (
+              <div
+                key={feature.title}
+                className="group p-6 bg-white rounded-sm border border-gray-100 hover:border-gold/30 hover:shadow-lg transition-all duration-300"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                <div className="w-10 h-10 bg-gold/10 rounded-sm flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
+                  <feature.icon className="w-5 h-5 text-gold" />
                 </div>
-              ))}
-            </div>
-          </AnimatedCard>
-
-          <AnimatedCard delay={200}>
-            <div className="relative">
-              <div className="relative aspect-[4/5] rounded-sm overflow-hidden shadow-2xl">
-                <Image
-                  src={imagePath("photo_2026-08-31_14-38-47.jpg")}
-                  alt="Professional beard grooming training"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
+                <h3 className="font-bold text-charcoal mb-2">{feature.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 border-4 border-gold rounded-sm -z-10" />
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-gold/20 rounded-sm -z-10" />
-            </div>
-          </AnimatedCard>
-        </div>
+            ))}
+          </div>
+        </AnimatedCard>
 
         <AnimatedCard delay={300} className="text-center">
           <Link href="/membership">

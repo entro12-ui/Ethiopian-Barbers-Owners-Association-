@@ -7,9 +7,7 @@ import Goals from "@/components/sections/Goals";
 import ProfessionalDevelopment from "@/components/sections/ProfessionalDevelopment";
 import HealthSafety from "@/components/sections/HealthSafety";
 import Membership from "@/components/sections/Membership";
-import Events from "@/components/sections/Events";
 import Gallery from "@/components/sections/Gallery";
-import Community from "@/components/sections/Community";
 import Statistics from "@/components/sections/Statistics";
 import CTASection from "@/components/sections/CTASection";
 import Contact from "@/components/sections/Contact";
@@ -26,9 +24,7 @@ export default function Home() {
         <ProfessionalDevelopment />
         <HealthSafety />
         <Membership />
-        <Events />
         <Gallery />
-        <Community />
         <Statistics />
         <CTASection />
         <FAQ />

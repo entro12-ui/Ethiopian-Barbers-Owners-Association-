@@ -12,20 +12,16 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 
 export const membershipFormSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  email: z.string().email("Please enter a valid email address"),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .optional()
+    .or(z.literal("")),
+  barbershopName: z.string().min(2, "Barbershop name is required"),
   address: z.string().min(5, "Address is required"),
-  city: z.string().min(2, "City is required"),
-  profession: z.string().min(2, "Profession is required"),
-  barbershopName: z.string().optional(),
-  yearsOfExperience: z.string().min(1, "Years of experience is required"),
-  barbershopAddress: z.string().optional(),
   applicantType: z.enum(["owner", "barber"], {
-    message: "Please select owner or barber",
-  }),
-  agreement: z.literal(true, {
-    message: "You must confirm the information is accurate",
+    message: "Please select Barber or Barbershop Owner",
   }),
 });
 

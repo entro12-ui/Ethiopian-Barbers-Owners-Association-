@@ -94,7 +94,24 @@ export async function initializeDatabase(): Promise<void> {
       );
 
       CREATE INDEX IF NOT EXISTS idx_contact_created ON contact_messages(created_at DESC);
+
+      CREATE TABLE IF NOT EXISTS association_stats (
+        key TEXT PRIMARY KEY,
+        value INTEGER NOT NULL DEFAULT 0,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      INSERT INTO association_stats (key, value) VALUES
+        ('training_programs', 0),
+        ('community_events', 0)
+      ON CONFLICT (key) DO NOTHING;
     `);
+
+    await client.query(`
+      ALTER TABLE membership_applications ALTER COLUMN date_of_birth DROP NOT NULL;
+      ALTER TABLE membership_applications ALTER COLUMN email DROP NOT NULL;
+      ALTER TABLE membership_applications ALTER COLUMN city DROP NOT NULL;
+    `).catch(() => {});
 
     initialized = true;
   } finally {
