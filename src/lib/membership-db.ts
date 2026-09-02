@@ -3,6 +3,7 @@ import { PoolClient } from "pg";
 import { withTransaction } from "@/lib/db";
 
 export type ApplicantType = "owner" | "barber";
+export type MembershipLevel = "gold" | "silver" | "white";
 export type ApplicationStatus = "pending" | "under_review" | "approved" | "rejected";
 
 export interface MembershipApplicationInput {
@@ -12,6 +13,7 @@ export interface MembershipApplicationInput {
   barbershopName: string;
   address: string;
   applicantType: ApplicantType;
+  membershipLevel: MembershipLevel;
 }
 
 export interface DocumentInput {
@@ -48,8 +50,8 @@ export async function createMembershipApplication(
       `INSERT INTO membership_applications (
         id, application_ref, full_name, date_of_birth, phone, email, address, city,
         profession, barbershop_name, years_of_experience, barbershop_address,
-        applicant_type, agreement
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+        applicant_type, membership_level, agreement
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
       RETURNING id, application_ref, status, submitted_at`,
       [
         id,
@@ -65,6 +67,7 @@ export async function createMembershipApplication(
         0,
         null,
         data.applicantType,
+        data.membershipLevel,
         true,
       ]
     );
@@ -104,6 +107,7 @@ export async function getMembershipApplicationByRef(ref: string) {
       a.full_name,
       a.status,
       a.applicant_type,
+      a.membership_level,
       a.submitted_at,
       a.updated_at,
       a.reviewed_at,

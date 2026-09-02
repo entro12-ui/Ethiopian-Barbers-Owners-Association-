@@ -22,14 +22,15 @@ export const CONTACT = {
 };
 
 export const NAV_LINKS = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Goals", href: "#goals" },
-  { label: "Professional Development", href: "#development" },
-  { label: "Health & Safety", href: "#health-safety" },
-  { label: "Membership", href: "#membership" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/#home" },
+  { label: "About", href: "/#about" },
+  { label: "Goals", href: "/#goals" },
+  { label: "Events", href: "/events" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "News", href: "/news" },
+  { label: "Membership", href: "/#membership" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const IMAGES = [
@@ -52,92 +53,6 @@ export const IMAGES = [
 export function imagePath(filename: string) {
   return `/images/${filename}`;
 }
-
-export const EVENTS = [
-  {
-    id: 1,
-    title: "Annual Sports & Mazega Day",
-    date: "2026-03-15",
-    location: "Addis Ababa",
-    category: "Sports & Mazega",
-    description: "A day of sports activities and Mazega to promote physical health and social connection among members.",
-    image: "photo_2026-08-31_14-39-45.jpg",
-  },
-  {
-    id: 2,
-    title: "Modern Hair Styling Workshop",
-    date: "2026-04-20",
-    location: "Addis Ababa",
-    category: "Professional Training",
-    description: "Hands-on training in contemporary men's haircutting and styling techniques from international experts.",
-    image: "photo_2026-08-31_14-38-33.jpg",
-  },
-  {
-    id: 3,
-    title: "Beard Grooming Masterclass",
-    date: "2026-05-10",
-    location: "Addis Ababa",
-    category: "Grooming Workshops",
-    description: "Professional skills in beard shaping, trimming, styling, and maintenance.",
-    image: "photo_2026-08-31_14-38-47.jpg",
-  },
-  {
-    id: 4,
-    title: "Workplace Safety Training",
-    date: "2026-06-05",
-    location: "Addis Ababa",
-    category: "Workplace Safety Training",
-    description: "Essential safety and hygiene training for barbering professionals.",
-    image: "photo_2026-08-31_14-39-16.jpg",
-  },
-  {
-    id: 5,
-    title: "Occupational Health Awareness",
-    date: "2026-07-12",
-    location: "Addis Ababa",
-    category: "Health Awareness",
-    description: "Raising awareness about health challenges faced by barbering professionals.",
-    image: "photo_2026-08-31_14-39-23.jpg",
-  },
-  {
-    id: 6,
-    title: "Quarterly Association Meeting",
-    date: "2026-08-01",
-    location: "Addis Ababa",
-    category: "Association Meetings",
-    description: "Quarterly gathering of members to discuss association progress and plans.",
-    image: "photo_2026-08-31_14-40-00.jpg",
-  },
-  {
-    id: 7,
-    title: "Professional Networking Event",
-    date: "2026-09-18",
-    location: "Addis Ababa",
-    category: "Networking Events",
-    description: "Connect with fellow grooming professionals and share industry knowledge.",
-    image: "photo_2026-08-31_14-40-16.jpg",
-  },
-  {
-    id: 8,
-    title: "Facial Care & Grooming Seminar",
-    date: "2026-10-25",
-    location: "Addis Ababa",
-    category: "Grooming Workshops",
-    description: "Modern men's facial care and grooming practices for professional barbers.",
-    image: "photo_2026-08-31_14-38-52.jpg",
-  },
-];
-
-export const EVENT_CATEGORIES = [
-  "All",
-  "Sports & Mazega",
-  "Professional Training",
-  "Grooming Workshops",
-  "Health Awareness",
-  "Workplace Safety Training",
-  "Association Meetings",
-  "Networking Events",
-];
 
 export const GALLERY_ITEMS = [
   { src: "photo_2026-08-31_14-38-33.jpg", category: "Hair Styling", alt: "Professional hair styling" },

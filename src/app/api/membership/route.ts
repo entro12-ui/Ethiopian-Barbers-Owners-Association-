@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       barbershopName: formData.get("barbershopName") as string,
       address: formData.get("address") as string,
       applicantType: formData.get("applicantType") as "owner" | "barber",
+      membershipLevel: formData.get("membershipLevel") as "gold" | "silver" | "white",
     };
 
     const result = membershipFormSchema.safeParse(data);
@@ -75,6 +76,7 @@ export async function POST(request: NextRequest) {
         barbershopName: parsed.barbershopName,
         address: parsed.address,
         applicantType: parsed.applicantType,
+        membershipLevel: parsed.membershipLevel,
       },
       documents
     );
@@ -113,6 +115,7 @@ export async function GET(request: NextRequest) {
       fullName: application.full_name,
       status: application.status,
       applicantType: application.applicant_type,
+      membershipLevel: application.membership_level,
       submittedAt: application.submitted_at,
       updatedAt: application.updated_at,
       reviewedAt: application.reviewed_at,

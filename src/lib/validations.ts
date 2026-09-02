@@ -23,6 +23,9 @@ export const membershipFormSchema = z.object({
   applicantType: z.enum(["owner", "barber"], {
     message: "Please select Barber or Barbershop Owner",
   }),
+  membershipLevel: z.enum(["gold", "silver", "white"], {
+    message: "Please select a membership level",
+  }),
 });
 
 export type MembershipFormData = z.infer<typeof membershipFormSchema>;

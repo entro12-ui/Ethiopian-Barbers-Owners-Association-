@@ -60,6 +60,7 @@ export async function initializeDatabase(): Promise<void> {
         years_of_experience INTEGER NOT NULL,
         barbershop_address TEXT,
         applicant_type TEXT NOT NULL CHECK (applicant_type IN ('owner', 'barber')),
+        membership_level TEXT NOT NULL DEFAULT 'white' CHECK (membership_level IN ('gold', 'silver', 'white')),
         status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'under_review', 'approved', 'rejected')),
         agreement BOOLEAN NOT NULL DEFAULT true,
         submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -109,12 +110,43 @@ export async function initializeDatabase(): Promise<void> {
         ('training_programs', 0),
         ('community_events', 0)
       ON CONFLICT (key) DO NOTHING;
+
+      CREATE TABLE IF NOT EXISTS posts (
+        id TEXT PRIMARY KEY,
+        slug TEXT UNIQUE NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('event', 'job', 'announcement', 'general')),
+        title TEXT NOT NULL,
+        summary TEXT,
+        body TEXT NOT NULL,
+        category TEXT,
+        location TEXT,
+        event_date DATE,
+        application_deadline DATE,
+        contact_email TEXT,
+        contact_phone TEXT,
+        image_mime_type TEXT,
+        image_file_name TEXT,
+        image_data BYTEA,
+        status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+        published_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_by TEXT DEFAULT 'admin'
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_posts_type ON posts(type);
+      CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+      CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
     `);
 
     await client.query(`
       ALTER TABLE membership_applications ALTER COLUMN date_of_birth DROP NOT NULL;
       ALTER TABLE membership_applications ALTER COLUMN email DROP NOT NULL;
       ALTER TABLE membership_applications ALTER COLUMN city DROP NOT NULL;
+      ALTER TABLE membership_applications
+        ADD COLUMN IF NOT EXISTS membership_level TEXT NOT NULL DEFAULT 'white'
+        CHECK (membership_level IN ('gold', 'silver', 'white'));
     `).catch(() => {});
 
     initialized = true;

@@ -29,6 +29,7 @@ export default function MembershipPage() {
     resolver: zodResolver(membershipFormSchema),
     defaultValues: {
       applicantType: "barber",
+      membershipLevel: "white",
       email: "",
     },
   });
@@ -43,6 +44,7 @@ export default function MembershipPage() {
       formData.append("barbershopName", data.barbershopName);
       formData.append("address", data.address);
       formData.append("applicantType", data.applicantType);
+      formData.append("membershipLevel", data.membershipLevel);
       photos.forEach((photo) => formData.append("photos", photo));
 
       const response = await fetch("/api/membership", {
@@ -216,6 +218,24 @@ export default function MembershipPage() {
                 </select>
                 {errors.applicantType && (
                   <p className="text-red-500 text-xs mt-1">{errors.applicantType.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="membershipLevel" className="block text-sm font-medium text-charcoal mb-1">
+                  Membership Level *
+                </label>
+                <select
+                  id="membershipLevel"
+                  {...register("membershipLevel")}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold bg-white"
+                >
+                  <option value="gold">Gold Level</option>
+                  <option value="silver">Silver Level</option>
+                  <option value="white">White Level</option>
+                </select>
+                {errors.membershipLevel && (
+                  <p className="text-red-500 text-xs mt-1">{errors.membershipLevel.message}</p>
                 )}
               </div>
 
