@@ -28,25 +28,16 @@ export default function Home() {
         <PostListSection
           id="events"
           type="event"
-          title="Latest Events"
-          subtitle="Training programs, community activities, and professional development opportunities."
           viewAllHref="/events"
-          viewAllLabel="View All Events"
         />
         <PostListSection
           type="job"
-          title="Job Opportunities"
-          subtitle="Career openings for barbers and barbershop owners."
           viewAllHref="/jobs"
-          viewAllLabel="View All Jobs"
         />
         <PostListSection
           type="announcement"
           types={["announcement", "general"]}
-          title="News & Updates"
-          subtitle="Announcements and updates from the association."
           viewAllHref="/news"
-          viewAllLabel="View All News"
         />
         <Gallery />
         <Statistics />

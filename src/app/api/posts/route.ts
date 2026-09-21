@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase, isDatabaseConfigured } from "@/lib/db";
 import { listPosts, PostType } from "@/lib/posts-db";
 import { serializePostForClient } from "@/lib/post-utils";
 
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!isDatabaseConfigured()) {
       return NextResponse.json({ posts: [] });
     }
 

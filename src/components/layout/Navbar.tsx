@@ -3,6 +3,8 @@
 import { cn, scrollToSection } from "@/lib/utils";
 import { NAV_LINKS } from "@/lib/constants";
 import Logo from "@/components/ui/Logo";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,6 +12,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 
 export default function Navbar() {
+  const { t } = useI18n();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -36,7 +39,8 @@ export default function Navbar() {
     }
   };
 
-  const renderNavItem = (link: { label: string; href: string }, mobile = false) => {
+  const renderNavItem = (link: (typeof NAV_LINKS)[number], mobile = false) => {
+    const label = t.nav[link.key];
     const isAnchor = link.href.includes("#");
     const className = mobile
       ? cn(
@@ -53,20 +57,20 @@ export default function Navbar() {
             onClick={() => handleAnchorClick(link.href)}
             className={className}
           >
-            {link.label}
+            {label}
           </button>
         );
       }
       return (
         <Link key={link.href} href={link.href} className={className} onClick={() => setIsMobileOpen(false)}>
-          {link.label}
+          {label}
         </Link>
       );
     }
 
     return (
       <Link key={link.href} href={link.href} className={className} onClick={() => setIsMobileOpen(false)}>
-        {link.label}
+        {label}
       </Link>
     );
   };
@@ -82,41 +86,45 @@ export default function Navbar() {
     >
       <nav className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/#home" className="group" aria-label="Go to homepage">
-            <Logo size="md" priority className="group-hover:scale-[1.02] transition-transform" />
+          <Link href="/#home" className="group" aria-label={t.nav.goHome}>
+            <Logo size="md" priority alt={t.site.logoAlt} className="group-hover:scale-[1.02] transition-transform" />
           </Link>
 
           <div className="hidden xl:flex items-center gap-1">
             {NAV_LINKS.map((link) => renderNavItem(link))}
           </div>
 
-          <div className="hidden xl:block">
+          <div className="hidden xl:flex items-center gap-3">
+            <LanguageSwitcher />
             <Link href="/membership">
-              <Button size="sm">Join Us</Button>
+              <Button size="sm">{t.nav.joinUs}</Button>
             </Link>
           </div>
 
-          <button
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="xl:hidden p-2 text-white hover:text-gold transition-colors"
-            aria-label={isMobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMobileOpen}
-          >
-            <div className="relative w-6 h-6">
-              <Menu
-                className={cn(
-                  "w-6 h-6 absolute inset-0 transition-all duration-300",
-                  isMobileOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
-                )}
-              />
-              <X
-                className={cn(
-                  "w-6 h-6 absolute inset-0 transition-all duration-300",
-                  isMobileOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
-                )}
-              />
-            </div>
-          </button>
+          <div className="xl:hidden flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className="p-2 text-white hover:text-gold transition-colors"
+              aria-label={isMobileOpen ? t.nav.closeMenu : t.nav.openMenu}
+              aria-expanded={isMobileOpen}
+            >
+              <div className="relative w-6 h-6">
+                <Menu
+                  className={cn(
+                    "w-6 h-6 absolute inset-0 transition-all duration-300",
+                    isMobileOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
+                  )}
+                />
+                <X
+                  className={cn(
+                    "w-6 h-6 absolute inset-0 transition-all duration-300",
+                    isMobileOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
+                  )}
+                />
+              </div>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -132,9 +140,10 @@ export default function Navbar() {
               {renderNavItem(link, true)}
             </div>
           ))}
+          <LanguageSwitcher variant="menu" />
           <div className="mt-4 px-4">
             <Link href="/membership" onClick={() => setIsMobileOpen(false)}>
-              <Button className="w-full">Join Us</Button>
+              <Button className="w-full">{t.nav.joinUs}</Button>
             </Link>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase, isDatabaseConfigured } from "@/lib/db";
 import { getPostImage } from "@/lib/posts-db";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!isDatabaseConfigured()) {
       return new NextResponse(null, { status: 404 });
     }
 

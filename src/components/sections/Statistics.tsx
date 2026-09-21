@@ -2,19 +2,21 @@
 
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import AnimatedCard from "@/components/ui/AnimatedCard";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { useEffect, useState } from "react";
 
 interface StatItem {
   value: number;
-  label: string;
+  key: "barbers" | "barbershopOwners";
 }
 
 const defaultStats: StatItem[] = [
-  { value: 0, label: "Barbers" },
-  { value: 0, label: "Barbershop Owners" },
+  { value: 0, key: "barbers" },
+  { value: 0, key: "barbershopOwners" },
 ];
 
 export default function Statistics() {
+  const { t } = useI18n();
   const [stats, setStats] = useState<StatItem[]>(defaultStats);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,8 +28,8 @@ export default function Statistics() {
 
         const data = await response.json();
         setStats([
-          { value: data.barbers, label: "Barbers" },
-          { value: data.barbershopOwners, label: "Barbershop Owners" },
+          { value: data.barbers, key: "barbers" },
+          { value: data.barbershopOwners, key: "barbershopOwners" },
         ]);
       } catch {
         // Keep zeros if API unavailable
@@ -54,19 +56,19 @@ export default function Statistics() {
       <div className="container mx-auto px-4 lg:px-8 relative">
         <AnimatedCard className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Our Impact
+            {t.statistics.title}
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Growing together as a professional community dedicated to excellence in men&apos;s grooming.
+            {t.statistics.subtitle}
           </p>
         </AnimatedCard>
 
         <div className="grid grid-cols-2 gap-8 md:gap-12 max-w-2xl mx-auto">
           {stats.map((stat) => (
             <AnimatedCounter
-              key={stat.label}
+              key={stat.key}
               value={isLoading ? 0 : stat.value}
-              label={stat.label}
+              label={t.statistics[stat.key]}
             />
           ))}
         </div>

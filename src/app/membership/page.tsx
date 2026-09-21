@@ -6,27 +6,31 @@ import BackToTop from "@/components/layout/BackToTop";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
 import ToastContainer from "@/components/ui/ToastContainer";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/hooks/useToast";
-import { membershipFormSchema, MembershipFormData } from "@/lib/validations";
+import { interpolate } from "@/lib/i18n";
+import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Loader2, ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function MembershipPage() {
+  const { locale, t } = useI18n();
   const { toasts, showToast, dismissToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
+  const schema = useMemo(() => createMembershipFormSchema(t), [t]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<MembershipFormData>({
-    resolver: zodResolver(membershipFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       applicantType: "barber",
       membershipLevel: "white",
@@ -55,15 +59,15 @@ export default function MembershipPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to submit application");
+        throw new Error(result.error || t.membership.submitError);
       }
 
       setApplicationId(result.applicationId);
       setIsSubmitted(true);
-      showToast("Application submitted successfully!", "success");
+      showToast(t.membership.submitSuccess, "success");
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "Failed to submit application",
+        error instanceof Error ? error.message : t.membership.submitError,
         "error"
       );
     } finally {
@@ -82,18 +86,17 @@ export default function MembershipPage() {
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-charcoal mb-4">
-                Application Submitted Successfully
+                {t.membership.successTitle}
               </h1>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Thank you for applying to join the Ethiopian Barbers and Owners
-                Association. Your application has been received and is under review.
+                {t.membership.successBody}
               </p>
               <div className="bg-off-white p-4 rounded-sm mb-8">
-                <p className="text-sm text-gray-500">Application Reference</p>
+                <p className="text-sm text-gray-500">{t.membership.reference}</p>
                 <p className="text-xl font-bold text-gold">{applicationId}</p>
               </div>
               <Link href="/">
-                <Button>Return to Homepage</Button>
+                <Button>{t.common.returnHome}</Button>
               </Link>
             </div>
           </div>
@@ -115,31 +118,31 @@ export default function MembershipPage() {
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gold transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Homepage
+            {t.common.backHome}
           </Link>
 
           <div className="text-center mb-10">
             <div className="flex justify-center mb-6">
-              <Logo size="xl" />
+              <Logo size="xl" alt={t.site.logoAlt} />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-charcoal mb-4">
-              Membership Application
+              {t.membership.title}
             </h1>
             <p className="text-gray-600 max-w-xl mx-auto">
-              Complete the form below to apply for membership.
+              {t.membership.subtitle}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form key={locale} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  Full Name of the Member *
+                  {t.membership.fullName}
                 </label>
                 <input
                   {...register("fullName")}
                   className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder="Enter your full name"
+                  placeholder={t.membership.fullNamePlaceholder}
                 />
                 {errors.fullName && (
                   <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
@@ -148,7 +151,7 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  Phone Number *
+                  {t.membership.phone}
                 </label>
                 <input
                   {...register("phone")}
@@ -163,7 +166,7 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  Email <span className="text-gray-400 font-normal">(optional)</span>
+                  {t.membership.email} <span className="text-gray-400 font-normal">{t.membership.optional}</span>
                 </label>
                 <input
                   {...register("email")}
@@ -178,12 +181,12 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  Barbershop Name *
+                  {t.membership.barbershopName}
                 </label>
                 <input
                   {...register("barbershopName")}
                   className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder="Name of barbershop"
+                  placeholder={t.membership.barbershopNamePlaceholder}
                 />
                 {errors.barbershopName && (
                   <p className="text-red-500 text-xs mt-1">{errors.barbershopName.message}</p>
@@ -192,12 +195,12 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  Address *
+                  {t.membership.address}
                 </label>
                 <input
                   {...register("address")}
                   className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder="Full address"
+                  placeholder={t.membership.addressPlaceholder}
                 />
                 {errors.address && (
                   <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>
@@ -206,15 +209,15 @@ export default function MembershipPage() {
 
               <div>
                 <label htmlFor="applicantType" className="block text-sm font-medium text-charcoal mb-1">
-                  Member Type *
+                  {t.membership.memberType}
                 </label>
                 <select
                   id="applicantType"
                   {...register("applicantType")}
                   className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold bg-white"
                 >
-                  <option value="barber">Barber</option>
-                  <option value="owner">Barbershop Owner</option>
+                  <option value="barber">{t.membership.barber}</option>
+                  <option value="owner">{t.membership.owner}</option>
                 </select>
                 {errors.applicantType && (
                   <p className="text-red-500 text-xs mt-1">{errors.applicantType.message}</p>
@@ -223,16 +226,16 @@ export default function MembershipPage() {
 
               <div>
                 <label htmlFor="membershipLevel" className="block text-sm font-medium text-charcoal mb-1">
-                  Membership Level *
+                  {t.membership.membershipLevel}
                 </label>
                 <select
                   id="membershipLevel"
                   {...register("membershipLevel")}
                   className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold bg-white"
                 >
-                  <option value="gold">Gold Level</option>
-                  <option value="silver">Silver Level</option>
-                  <option value="white">White Level</option>
+                  <option value="gold">{t.membership.gold}</option>
+                  <option value="silver">{t.membership.silver}</option>
+                  <option value="white">{t.membership.white}</option>
                 </select>
                 {errors.membershipLevel && (
                   <p className="text-red-500 text-xs mt-1">{errors.membershipLevel.message}</p>
@@ -241,7 +244,7 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
-                  Photos <span className="text-gray-400 font-normal">(optional)</span>
+                  {t.membership.photos} <span className="text-gray-400 font-normal">{t.membership.optional}</span>
                 </label>
                 <div className="relative">
                   <input
@@ -255,8 +258,8 @@ export default function MembershipPage() {
                     <Upload className="w-5 h-5 text-gray-400 shrink-0" />
                     <span className="text-sm text-gray-500 truncate">
                       {photos.length > 0
-                        ? `${photos.length} photo(s) selected`
-                        : "Click to upload photos (optional)"}
+                        ? interpolate(t.membership.photosSelected, { count: photos.length })
+                        : t.membership.photosHint}
                     </span>
                   </div>
                 </div>
@@ -267,10 +270,10 @@ export default function MembershipPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Submitting Application...
+                  {t.membership.submitting}
                 </>
               ) : (
-                "Submit Membership Application"
+                t.membership.submit
               )}
             </Button>
           </form>

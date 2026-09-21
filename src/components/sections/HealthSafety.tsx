@@ -2,26 +2,29 @@
 
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { Shield, Droplets, Clock, Activity, AlertTriangle, HardHat, Users, Sparkles } from "lucide-react";
 
-const topics = [
-  { icon: Droplets, title: "Workplace Hygiene", description: "Maintaining clean and sanitized work environments." },
-  { icon: Shield, title: "Tool Sanitation", description: "Proper cleaning and sterilization of equipment." },
-  { icon: HardHat, title: "Safe Practices", description: "Implementing safe working procedures daily." },
-  { icon: Clock, title: "Standing Hours", description: "Managing health risks from prolonged standing." },
-  { icon: Activity, title: "Ergonomics", description: "Proper posture and workspace setup." },
-  { icon: AlertTriangle, title: "Health Awareness", description: "Recognizing occupational health challenges." },
-  { icon: Sparkles, title: "Protective Practices", description: "Personal protective equipment and habits." },
-  { icon: Users, title: "Customer Hygiene", description: "Ensuring hygiene for clients and professionals." },
-];
-
 export default function HealthSafety() {
+  const { t } = useI18n();
+
+  const topics = [
+    { icon: Droplets, title: t.health.topics.workplaceHygiene.title, description: t.health.topics.workplaceHygiene.description },
+    { icon: Shield, title: t.health.topics.toolSanitation.title, description: t.health.topics.toolSanitation.description },
+    { icon: HardHat, title: t.health.topics.safePractices.title, description: t.health.topics.safePractices.description },
+    { icon: Clock, title: t.health.topics.standingHours.title, description: t.health.topics.standingHours.description },
+    { icon: Activity, title: t.health.topics.ergonomics.title, description: t.health.topics.ergonomics.description },
+    { icon: AlertTriangle, title: t.health.topics.healthAwareness.title, description: t.health.topics.healthAwareness.description },
+    { icon: Sparkles, title: t.health.topics.protectivePractices.title, description: t.health.topics.protectivePractices.description },
+    { icon: Users, title: t.health.topics.customerHygiene.title, description: t.health.topics.customerHygiene.description },
+  ];
+
   return (
     <section id="health-safety" className="py-20 md:py-28 bg-white">
       <div className="container mx-auto px-4 lg:px-8">
         <SectionHeading
-          title="Healthy Professionals. Safer Workplaces."
-          subtitle="Protecting barbering professionals from occupational health challenges through education, training, and awareness."
+          title={t.health.title}
+          subtitle={t.health.subtitle}
         />
 
         <AnimatedCard>

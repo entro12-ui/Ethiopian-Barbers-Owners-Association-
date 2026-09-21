@@ -1,18 +1,24 @@
 import { Pool, PoolClient } from "pg";
-import { getDatabaseSsl } from "@/lib/db-config";
+import {
+  getDatabaseSsl,
+  isPlaceholderDatabaseUrl,
+  normalizeDatabaseUrl,
+} from "@/lib/db-config";
 
 let pool: Pool | null = null;
 let initialized = false;
 
 export function isDatabaseConfigured(): boolean {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(process.env.DATABASE_URL) && !isPlaceholderDatabaseUrl(process.env.DATABASE_URL);
 }
 
 export function getPool(): Pool {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+  const rawConnectionString = process.env.DATABASE_URL;
+  if (!rawConnectionString || isPlaceholderDatabaseUrl(rawConnectionString)) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
+
+  const connectionString = normalizeDatabaseUrl(rawConnectionString);
 
   if (!pool) {
     pool = new Pool({

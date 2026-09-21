@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase, isDatabaseConfigured } from "@/lib/db";
 import { getPostBySlug } from "@/lib/posts-db";
 import { serializePostForClient } from "@/lib/post-utils";
 
@@ -9,7 +9,7 @@ type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!isDatabaseConfigured()) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 

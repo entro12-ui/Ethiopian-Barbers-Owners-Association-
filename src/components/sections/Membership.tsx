@@ -3,11 +3,14 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { imagePath } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Membership() {
+  const { t } = useI18n();
+
   return (
     <section id="membership" className="py-20 md:py-28 bg-charcoal relative overflow-hidden">
       <div className="absolute inset-0 opacity-20">
@@ -23,14 +26,14 @@ export default function Membership() {
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title="Become a Member"
-          subtitle="Join a professional community committed to modernizing men's hairdressing, improving workplace health and safety, and creating new opportunities for professional growth."
+          title={t.membershipSection.title}
+          subtitle={t.membershipSection.subtitle}
           light
         />
 
         <AnimatedCard className="text-center">
           <Link href="/membership">
-            <Button size="lg">Apply for Membership</Button>
+            <Button size="lg">{t.membershipSection.apply}</Button>
           </Link>
         </AnimatedCard>
       </div>

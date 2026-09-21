@@ -2,18 +2,20 @@
 
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
-import { GALLERY_CATEGORIES, GALLERY_ITEMS, imagePath } from "@/lib/constants";
+import { useI18n } from "@/components/i18n/LanguageProvider";
+import { GALLERY_CATEGORIES, GALLERY_ITEMS, imagePath, type GalleryCategoryKey } from "@/lib/constants";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 export default function Gallery() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const { t } = useI18n();
+  const [activeCategory, setActiveCategory] = useState<GalleryCategoryKey>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const filteredItems =
-    activeCategory === "All"
+    activeCategory === "all"
       ? GALLERY_ITEMS
       : GALLERY_ITEMS.filter((item) => item.category === activeCategory);
 
@@ -54,8 +56,8 @@ export default function Gallery() {
     <section id="gallery" className="py-20 md:py-28 bg-off-white">
       <div className="container mx-auto px-4 lg:px-8">
         <SectionHeading
-          title="Gallery"
-          subtitle="Moments from our training programs, community events, and professional activities."
+          title={t.gallery.title}
+          subtitle={t.gallery.subtitle}
         />
 
         <AnimatedCard className="mb-10">
@@ -71,7 +73,7 @@ export default function Gallery() {
                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                 )}
               >
-                {category}
+                {t.gallery.categories[category]}
               </button>
             ))}
           </div>
@@ -86,7 +88,7 @@ export default function Gallery() {
               >
                 <Image
                   src={imagePath(item.src)}
-                  alt={item.alt}
+                  alt={t.gallery.alts[item.altKey]}
                   width={400}
                   height={index % 3 === 0 ? 500 : index % 3 === 1 ? 350 : 450}
                   className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -94,7 +96,7 @@ export default function Gallery() {
                 <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/40 transition-colors duration-300 flex items-end">
                   <div className="p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                     <span className="text-xs text-gold font-semibold uppercase tracking-wider">
-                      {item.category}
+                      {t.gallery.categories[item.category]}
                     </span>
                   </div>
                 </div>
@@ -112,7 +114,7 @@ export default function Gallery() {
           <button
             onClick={closeLightbox}
             className="absolute top-6 right-6 p-2 text-white hover:text-gold transition-colors z-10"
-            aria-label="Close lightbox"
+            aria-label={t.gallery.closeLightbox}
           >
             <X className="w-8 h-8" />
           </button>
@@ -120,7 +122,7 @@ export default function Gallery() {
           <button
             onClick={(e) => { e.stopPropagation(); goPrev(); }}
             className="absolute left-4 md:left-8 p-2 text-white hover:text-gold transition-colors z-10"
-            aria-label="Previous image"
+            aria-label={t.gallery.previousImage}
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -128,7 +130,7 @@ export default function Gallery() {
           <button
             onClick={(e) => { e.stopPropagation(); goNext(); }}
             className="absolute right-4 md:right-8 p-2 text-white hover:text-gold transition-colors z-10"
-            aria-label="Next image"
+            aria-label={t.gallery.nextImage}
           >
             <ChevronRight className="w-8 h-8" />
           </button>
@@ -139,14 +141,14 @@ export default function Gallery() {
           >
             <Image
               src={imagePath(filteredItems[lightboxIndex].src)}
-              alt={filteredItems[lightboxIndex].alt}
+              alt={t.gallery.alts[filteredItems[lightboxIndex].altKey]}
               width={1200}
               height={800}
               className="max-h-[85vh] w-auto object-contain rounded-sm"
             />
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-charcoal/80 to-transparent">
-              <p className="text-white text-sm">{filteredItems[lightboxIndex].alt}</p>
-              <p className="text-gold text-xs mt-1">{filteredItems[lightboxIndex].category}</p>
+              <p className="text-white text-sm">{t.gallery.alts[filteredItems[lightboxIndex].altKey]}</p>
+              <p className="text-gold text-xs mt-1">{t.gallery.categories[filteredItems[lightboxIndex].category]}</p>
             </div>
           </div>
         </div>

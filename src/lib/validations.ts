@@ -1,31 +1,41 @@
 import { z } from "zod";
+import type { Translations } from "@/lib/i18n";
+import en from "@/lib/i18n/en";
 
-export const contactFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  email: z.string().email("Please enter a valid email address"),
-  subject: z.string().min(3, "Subject must be at least 3 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
+export function createContactFormSchema(t: Translations) {
+  return z.object({
+    name: z.string().min(2, t.contact.errors.nameMin),
+    phone: z.string().min(10, t.contact.errors.phoneInvalid),
+    email: z.string().email(t.contact.errors.emailInvalid),
+    subject: z.string().min(3, t.contact.errors.subjectMin),
+    message: z.string().min(10, t.contact.errors.messageMin),
+  });
+}
+
+export const contactFormSchema = createContactFormSchema(en);
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 
-export const membershipFormSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  email: z
-    .string()
-    .email("Please enter a valid email address")
-    .optional()
-    .or(z.literal("")),
-  barbershopName: z.string().min(2, "Barbershop name is required"),
-  address: z.string().min(5, "Address is required"),
-  applicantType: z.enum(["owner", "barber"], {
-    message: "Please select Barber or Barbershop Owner",
-  }),
-  membershipLevel: z.enum(["gold", "silver", "white"], {
-    message: "Please select a membership level",
-  }),
-});
+export function createMembershipFormSchema(t: Translations) {
+  return z.object({
+    fullName: z.string().min(2, t.membership.errors.fullName),
+    phone: z.string().min(10, t.membership.errors.phone),
+    email: z
+      .string()
+      .email(t.membership.errors.email)
+      .optional()
+      .or(z.literal("")),
+    barbershopName: z.string().min(2, t.membership.errors.barbershopName),
+    address: z.string().min(5, t.membership.errors.address),
+    applicantType: z.enum(["owner", "barber"], {
+      message: t.membership.errors.applicantType,
+    }),
+    membershipLevel: z.enum(["gold", "silver", "white"], {
+      message: t.membership.errors.membershipLevel,
+    }),
+  });
+}
+
+export const membershipFormSchema = createMembershipFormSchema(en);
 
 export type MembershipFormData = z.infer<typeof membershipFormSchema>;

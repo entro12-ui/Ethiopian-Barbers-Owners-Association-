@@ -3,38 +3,41 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { Scissors, Sparkles, Smile, Cpu, BookOpen } from "lucide-react";
 import Link from "next/link";
 
-const features = [
-  {
-    icon: Scissors,
-    title: "Modern Hair Styling",
-    description: "Learn contemporary men's haircutting and styling techniques.",
-  },
-  {
-    icon: Sparkles,
-    title: "Beard Grooming",
-    description: "Develop professional skills in beard shaping, trimming, styling, and maintenance.",
-  },
-  {
-    icon: Smile,
-    title: "Facial Care",
-    description: "Introduce modern men's facial-care and grooming practices.",
-  },
-  {
-    icon: Cpu,
-    title: "Modern Technology",
-    description: "Explore new tools, equipment, technologies, and international barbering trends.",
-  },
-  {
-    icon: BookOpen,
-    title: "Professional Training",
-    description: "Support continuous learning and professional development.",
-  },
-];
-
 export default function ProfessionalDevelopment() {
+  const { t } = useI18n();
+
+  const features = [
+    {
+      icon: Scissors,
+      title: t.development.features.modernHairStyling.title,
+      description: t.development.features.modernHairStyling.description,
+    },
+    {
+      icon: Sparkles,
+      title: t.development.features.beardGrooming.title,
+      description: t.development.features.beardGrooming.description,
+    },
+    {
+      icon: Smile,
+      title: t.development.features.facialCare.title,
+      description: t.development.features.facialCare.description,
+    },
+    {
+      icon: Cpu,
+      title: t.development.features.modernTechnology.title,
+      description: t.development.features.modernTechnology.description,
+    },
+    {
+      icon: BookOpen,
+      title: t.development.features.professionalTraining.title,
+      description: t.development.features.professionalTraining.description,
+    },
+  ];
+
   return (
     <section id="development" className="py-20 md:py-28 bg-off-white relative overflow-hidden">
       <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">
@@ -54,8 +57,8 @@ export default function ProfessionalDevelopment() {
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title="Grow Your Skills. Modernize Your Craft."
-          subtitle="The association supports professional barbers through modern education and exposure to international grooming techniques."
+          title={t.development.title}
+          subtitle={t.development.subtitle}
         />
 
         <AnimatedCard className="mb-16">
@@ -78,7 +81,7 @@ export default function ProfessionalDevelopment() {
 
         <AnimatedCard delay={300} className="text-center">
           <Link href="/membership">
-            <Button size="lg">Become a Member</Button>
+            <Button size="lg">{t.development.becomeMember}</Button>
           </Link>
         </AnimatedCard>
       </div>

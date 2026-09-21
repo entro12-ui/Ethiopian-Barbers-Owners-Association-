@@ -27,7 +27,8 @@ export const defaultMetadata: Metadata = {
     url: SITE_URL,
     siteName: SITE_NAME,
     type: "website",
-    locale: "en_ET",
+    locale: "am_ET",
+    alternateLocale: ["en_ET"],
     images: [
       {
         url: LOGO_OG_PATH,

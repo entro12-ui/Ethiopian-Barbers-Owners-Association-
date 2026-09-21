@@ -2,46 +2,46 @@
 
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { Heart, Shield, GraduationCap, Scissors, Sparkles, Users, Wrench, Network } from "lucide-react";
 
-const goals = [
-  {
-    icon: Heart,
-    title: "Healthcare",
-    description:
-      "Organize a series of sports events and Mazega activities to promote physical health, fitness, and social connection among members.",
-  },
-  {
-    icon: Shield,
-    title: "Workplace Safety",
-    description:
-      "Provide safety and hygiene training to prevent health problems caused by long hours of standing and regular workplace exposure in the hairdressing profession.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Professional Development",
-    description:
-      "Introduce men's hairdressing professionals to modern technologies and international trends in hair styling, beard care, and facial care (Grooming).",
-  },
-];
-
-const supporting = [
-  { icon: Scissors, label: "Skills Development" },
-  { icon: Sparkles, label: "Modern Techniques" },
-  { icon: Shield, label: "Hygiene & Sanitation" },
-  { icon: Heart, label: "Occupational Health" },
-  { icon: Wrench, label: "Technology Adoption" },
-  { icon: Network, label: "Professional Networking" },
-  { icon: Users, label: "Community Development" },
-];
-
 export default function Goals() {
+  const { t } = useI18n();
+
+  const goals = [
+    {
+      icon: Heart,
+      title: t.goals.items.healthcare.title,
+      description: t.goals.items.healthcare.description,
+    },
+    {
+      icon: Shield,
+      title: t.goals.items.workplaceSafety.title,
+      description: t.goals.items.workplaceSafety.description,
+    },
+    {
+      icon: GraduationCap,
+      title: t.goals.items.professionalDevelopment.title,
+      description: t.goals.items.professionalDevelopment.description,
+    },
+  ];
+
+  const supporting = [
+    { icon: Scissors, label: t.goals.supporting.skillsDevelopment },
+    { icon: Sparkles, label: t.goals.supporting.modernTechniques },
+    { icon: Shield, label: t.goals.supporting.hygieneSanitation },
+    { icon: Heart, label: t.goals.supporting.occupationalHealth },
+    { icon: Wrench, label: t.goals.supporting.technologyAdoption },
+    { icon: Network, label: t.goals.supporting.professionalNetworking },
+    { icon: Users, label: t.goals.supporting.communityDevelopment },
+  ];
+
   return (
     <section id="goals" className="py-20 md:py-28 bg-charcoal">
       <div className="container mx-auto px-4 lg:px-8">
         <SectionHeading
-          title="Our Goals"
-          subtitle="Building a healthier, safer, and more skilled grooming profession in Ethiopia."
+          title={t.goals.title}
+          subtitle={t.goals.subtitle}
           light
         />
 

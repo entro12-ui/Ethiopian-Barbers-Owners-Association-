@@ -6,6 +6,7 @@ interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   priority?: boolean;
+  alt?: string;
 }
 
 const sizes = {
@@ -15,7 +16,7 @@ const sizes = {
   xl: { image: 112, className: "w-28 h-28" },
 };
 
-export default function Logo({ size = "md", className, priority = false }: LogoProps) {
+export default function Logo({ size = "md", className, priority = false, alt = LOGO_ALT }: LogoProps) {
   const config = sizes[size];
 
   return (
@@ -28,7 +29,7 @@ export default function Logo({ size = "md", className, priority = false }: LogoP
     >
       <Image
         src={LOGO_PATH}
-        alt={LOGO_ALT}
+        alt={alt}
         width={config.image}
         height={config.image}
         className="w-full h-full object-cover"

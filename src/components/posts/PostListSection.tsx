@@ -3,6 +3,7 @@
 import PostCard from "@/components/posts/PostCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { PublicPost } from "@/lib/post-display";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,10 +11,7 @@ import { useEffect, useState } from "react";
 interface PostListSectionProps {
   type: "event" | "job" | "announcement" | "general";
   types?: ("announcement" | "general")[];
-  title: string;
-  subtitle: string;
   viewAllHref: string;
-  viewAllLabel: string;
   limit?: number;
   light?: boolean;
   id?: string;
@@ -22,16 +20,17 @@ interface PostListSectionProps {
 export default function PostListSection({
   type,
   types,
-  title,
-  subtitle,
   viewAllHref,
-  viewAllLabel,
   limit = 3,
   light = false,
   id,
 }: PostListSectionProps) {
+  const { t } = useI18n();
   const [posts, setPosts] = useState<PublicPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const copy =
+    type === "event" ? t.homePosts.events : type === "job" ? t.homePosts.jobs : t.homePosts.news;
 
   useEffect(() => {
     async function load() {
@@ -56,7 +55,7 @@ export default function PostListSection({
   return (
     <section id={id} className={`py-16 md:py-20 ${light ? "bg-charcoal" : "bg-off-white"}`}>
       <div className="container mx-auto px-4 lg:px-8">
-        <SectionHeading title={title} subtitle={subtitle} light={light} />
+        <SectionHeading title={copy.title} subtitle={copy.subtitle} light={light} />
         {isLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -72,7 +71,7 @@ export default function PostListSection({
             </div>
             <div className="text-center">
               <Link href={viewAllHref}>
-                <Button variant={light ? "outline" : "primary"}>{viewAllLabel}</Button>
+                <Button variant={light ? "outline" : "primary"}>{copy.viewAll}</Button>
               </Link>
             </div>
           </>

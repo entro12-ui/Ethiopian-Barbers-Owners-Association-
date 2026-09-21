@@ -1,39 +1,45 @@
-import { CONTACT, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
+"use client";
+
+import { CONTACT } from "@/lib/constants";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { FacebookIcon, YoutubeIcon, TikTokIcon } from "@/components/ui/SocialIcons";
 import Logo from "@/components/ui/Logo";
 import { Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 
+const FOOTER_LINKS = [
+  { key: "about", href: "#about" },
+  { key: "membership", href: "#membership" },
+  { key: "goals", href: "#goals" },
+  { key: "gallery", href: "#gallery" },
+  { key: "contact", href: "#contact" },
+] as const;
+
 export default function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="bg-charcoal text-gray-300">
       <div className="container mx-auto px-4 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <Logo size="lg" className="mb-5" />
-            <h3 className="text-white font-bold text-lg mb-4">Association</h3>
+            <Logo size="lg" alt={t.site.logoAlt} className="mb-5" />
+            <h3 className="text-white font-bold text-lg mb-4">{t.footer.association}</h3>
             <p className="text-sm leading-relaxed mb-4">
-              {SITE_NAME} — {SITE_TAGLINE}
+              {t.site.name} — {t.site.tagline}
             </p>
             <p className="text-sm leading-relaxed text-gray-400">
-              A professional organization dedicated to modernizing men&apos;s hairdressing
-              and grooming in Ethiopia.
+              {t.footer.description}
             </p>
           </div>
 
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Quick Links</h3>
+            <h3 className="text-white font-bold text-lg mb-4">{t.footer.quickLinks}</h3>
             <ul className="space-y-2 text-sm">
-              {[
-                { label: "About", href: "#about" },
-                { label: "Membership", href: "#membership" },
-                { label: "Goals", href: "#goals" },
-                { label: "Gallery", href: "#gallery" },
-                { label: "Contact", href: "#contact" },
-              ].map((link) => (
+              {FOOTER_LINKS.map((link) => (
                 <li key={link.href}>
                   <a href={link.href} className="hover:text-gold transition-colors">
-                    {link.label}
+                    {t.nav[link.key]}
                   </a>
                 </li>
               ))}
@@ -41,18 +47,18 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Membership</h3>
+            <h3 className="text-white font-bold text-lg mb-4">{t.footer.membership}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/membership" className="hover:text-gold transition-colors">
-                  Apply Online
+                  {t.footer.applyOnline}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Contact & Social</h3>
+            <h3 className="text-white font-bold text-lg mb-4">{t.footer.contactSocial}</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gold shrink-0" />
@@ -68,7 +74,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
-                <span>{CONTACT.address}</span>
+                <span>{t.contact.addressValue}</span>
               </li>
             </ul>
             <div className="flex gap-3 mt-5">
@@ -104,7 +110,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-gray-500">
-          <p>&copy; 2026 {SITE_NAME}. All Rights Reserved.</p>
+          <p>&copy; 2026 {t.site.name}. {t.footer.rights}</p>
         </div>
       </div>
     </footer>

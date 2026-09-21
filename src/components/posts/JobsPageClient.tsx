@@ -5,10 +5,12 @@ import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/layout/BackToTop";
 import PostCard from "@/components/posts/PostCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { PublicPost } from "@/lib/post-display";
 import { useEffect, useState } from "react";
 
 export default function JobsPageClient() {
+  const { t } = useI18n();
   const [posts, setPosts] = useState<PublicPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,8 +27,8 @@ export default function JobsPageClient() {
       <main className="pt-24 pb-16 bg-off-white min-h-screen">
         <div className="container mx-auto px-4 lg:px-8">
           <SectionHeading
-            title="Job Opportunities"
-            subtitle="Career and employment opportunities for barbers and barbershop owners."
+            title={t.posts.jobsPage.title}
+            subtitle={t.posts.jobsPage.subtitle}
           />
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,7 +37,7 @@ export default function JobsPageClient() {
               ))}
             </div>
           ) : posts.length === 0 ? (
-            <p className="text-center text-gray-500 py-16">No job posts yet. Check back soon.</p>
+            <p className="text-center text-gray-500 py-16">{t.posts.jobsPage.empty}</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (

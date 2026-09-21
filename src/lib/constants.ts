@@ -22,16 +22,18 @@ export const CONTACT = {
 };
 
 export const NAV_LINKS = [
-  { label: "Home", href: "/#home" },
-  { label: "About", href: "/#about" },
-  { label: "Goals", href: "/#goals" },
-  { label: "Events", href: "/events" },
-  { label: "Jobs", href: "/jobs" },
-  { label: "News", href: "/news" },
-  { label: "Membership", href: "/#membership" },
-  { label: "Gallery", href: "/#gallery" },
-  { label: "Contact", href: "/#contact" },
-];
+  { key: "home", href: "/#home" },
+  { key: "about", href: "/#about" },
+  { key: "goals", href: "/#goals" },
+  { key: "events", href: "/events" },
+  { key: "jobs", href: "/jobs" },
+  { key: "news", href: "/news" },
+  { key: "membership", href: "/#membership" },
+  { key: "gallery", href: "/#gallery" },
+  { key: "contact", href: "/#contact" },
+] as const;
+
+export type NavLinkKey = (typeof NAV_LINKS)[number]["key"];
 
 export const IMAGES = [
   "photo_2026-08-31_14-38-33.jpg",
@@ -55,32 +57,34 @@ export function imagePath(filename: string) {
 }
 
 export const GALLERY_ITEMS = [
-  { src: "photo_2026-08-31_14-38-33.jpg", category: "Hair Styling", alt: "Professional hair styling" },
-  { src: "photo_2026-08-31_14-38-41.jpg", category: "Barbers", alt: "Professional barber at work" },
-  { src: "photo_2026-08-31_14-38-47.jpg", category: "Beard Grooming", alt: "Beard grooming session" },
-  { src: "photo_2026-08-31_14-38-52.jpg", category: "Hair Styling", alt: "Modern hair styling techniques" },
-  { src: "photo_2026-08-31_14-39-01.jpg", category: "Barbershops", alt: "Professional barbershop interior" },
-  { src: "photo_2026-08-31_14-39-10.jpg", category: "Training", alt: "Professional training session" },
-  { src: "photo_2026-08-31_14-39-16.jpg", category: "Community", alt: "Community gathering" },
-  { src: "photo_2026-08-31_14-39-23.jpg", category: "Events", alt: "Association event" },
-  { src: "photo_2026-08-31_14-39-31.jpg", category: "Barbers", alt: "Barber professional portrait" },
-  { src: "photo_2026-08-31_14-39-45.jpg", category: "Events", alt: "Community sports event" },
-  { src: "photo_2026-08-31_14-39-52.jpg", category: "Training", alt: "Skills development workshop" },
-  { src: "photo_2026-08-31_14-40-00.jpg", category: "Community", alt: "Members community activity" },
-  { src: "photo_2026-08-31_14-40-16.jpg", category: "Barbershops", alt: "Modern barbershop" },
-  { src: "photo_2026-08-31_14-40-24.jpg", category: "Beard Grooming", alt: "Beard styling expertise" },
-];
+  { src: "photo_2026-08-31_14-38-33.jpg", category: "hairStyling", altKey: "professionalHairStyling" },
+  { src: "photo_2026-08-31_14-38-41.jpg", category: "barbers", altKey: "professionalBarberAtWork" },
+  { src: "photo_2026-08-31_14-38-47.jpg", category: "beardGrooming", altKey: "beardGroomingSession" },
+  { src: "photo_2026-08-31_14-38-52.jpg", category: "hairStyling", altKey: "modernHairStylingTechniques" },
+  { src: "photo_2026-08-31_14-39-01.jpg", category: "barbershops", altKey: "professionalBarbershopInterior" },
+  { src: "photo_2026-08-31_14-39-10.jpg", category: "training", altKey: "professionalTrainingSession" },
+  { src: "photo_2026-08-31_14-39-16.jpg", category: "community", altKey: "communityGathering" },
+  { src: "photo_2026-08-31_14-39-23.jpg", category: "events", altKey: "associationEvent" },
+  { src: "photo_2026-08-31_14-39-31.jpg", category: "barbers", altKey: "barberProfessionalPortrait" },
+  { src: "photo_2026-08-31_14-39-45.jpg", category: "events", altKey: "communitySportsEvent" },
+  { src: "photo_2026-08-31_14-39-52.jpg", category: "training", altKey: "skillsDevelopmentWorkshop" },
+  { src: "photo_2026-08-31_14-40-00.jpg", category: "community", altKey: "membersCommunityActivity" },
+  { src: "photo_2026-08-31_14-40-16.jpg", category: "barbershops", altKey: "modernBarbershop" },
+  { src: "photo_2026-08-31_14-40-24.jpg", category: "beardGrooming", altKey: "beardStylingExpertise" },
+] as const;
 
 export const GALLERY_CATEGORIES = [
-  "All",
-  "Hair Styling",
-  "Beard Grooming",
-  "Barbers",
-  "Barbershops",
-  "Training",
-  "Events",
-  "Community",
-];
+  "all",
+  "hairStyling",
+  "beardGrooming",
+  "barbers",
+  "barbershops",
+  "training",
+  "events",
+  "community",
+] as const;
+
+export type GalleryCategoryKey = (typeof GALLERY_CATEGORIES)[number];
 
 export const FAQ_ITEMS = [
   {

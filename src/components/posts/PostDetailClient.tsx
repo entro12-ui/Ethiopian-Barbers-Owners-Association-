@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/layout/BackToTop";
 import Button from "@/components/ui/Button";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { formatPostDate, getPostTypeLabel, PublicPost } from "@/lib/post-display";
 import { Calendar, MapPin, Mail, Phone, ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -11,6 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function PostDetailClient({ slug }: { slug: string }) {
+  const { locale, t } = useI18n();
   const [post, setPost] = useState<PublicPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,8 +34,8 @@ export default function PostDetailClient({ slug }: { slug: string }) {
   if (!post) {
     return (
       <div className="min-h-screen bg-off-white pt-24 flex flex-col items-center justify-center">
-        <p className="text-gray-500 mb-4">Post not found.</p>
-        <Link href="/"><Button>Back to Home</Button></Link>
+        <p className="text-gray-500 mb-4">{t.common.postNotFound}</p>
+        <Link href="/"><Button>{t.common.backToHome}</Button></Link>
       </div>
     );
   }
@@ -50,11 +52,11 @@ export default function PostDetailClient({ slug }: { slug: string }) {
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gold transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {t.common.back}
           </Link>
 
           <span className="inline-block px-3 py-1 bg-gold/20 text-charcoal text-sm font-semibold rounded-sm mb-4">
-            {getPostTypeLabel(post.type)}
+            {getPostTypeLabel(post.type, t.posts.types)}
           </span>
 
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal mb-4">{post.title}</h1>
@@ -63,7 +65,7 @@ export default function PostDetailClient({ slug }: { slug: string }) {
             {date && (
               <span className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                {formatPostDate(date)}
+                {formatPostDate(date, locale)}
               </span>
             )}
             {post.location && (
@@ -97,7 +99,7 @@ export default function PostDetailClient({ slug }: { slug: string }) {
 
           {(post.contactEmail || post.contactPhone) && (
             <div className="mt-10 p-6 bg-white rounded-sm border border-gray-100">
-              <h2 className="font-semibold text-charcoal mb-3">Contact</h2>
+              <h2 className="font-semibold text-charcoal mb-3">{t.common.contact}</h2>
               <div className="space-y-2 text-sm text-gray-600">
                 {post.contactEmail && (
                   <a href={`mailto:${post.contactEmail}`} className="flex items-center gap-2 hover:text-gold">

@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { formatPostDate, getPostTypeLabel, PublicPost } from "@/lib/post-display";
 import { Calendar, MapPin } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +13,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, showType = false }: PostCardProps) {
+  const { locale, t } = useI18n();
   const date = post.eventDate || post.applicationDeadline || post.publishedAt;
 
   return (
@@ -32,7 +34,7 @@ export default function PostCard({ post, showType = false }: PostCardProps) {
         <div className="absolute top-3 left-3 flex gap-2">
           {showType && (
             <span className="px-2 py-1 bg-white/90 text-charcoal text-xs font-semibold rounded-sm">
-              {getPostTypeLabel(post.type)}
+              {getPostTypeLabel(post.type, t.posts.types)}
             </span>
           )}
           {post.category && (
@@ -51,7 +53,7 @@ export default function PostCard({ post, showType = false }: PostCardProps) {
             {date && (
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                {formatPostDate(date)}
+                {formatPostDate(date, locale)}
               </span>
             )}
             {post.location && (
@@ -67,7 +69,7 @@ export default function PostCard({ post, showType = false }: PostCardProps) {
         </p>
         <Link href={`/posts/${post.slug}`}>
           <Button size="sm" variant="outline" className="w-full">
-            Read More
+            {t.common.readMore}
           </Button>
         </Link>
       </div>

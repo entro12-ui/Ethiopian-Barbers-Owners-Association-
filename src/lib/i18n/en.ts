@@ -1,0 +1,385 @@
+const en = {
+  site: {
+    name: "Ethiopian Barbers & Owners Association",
+    shortName: "EBOA",
+    tagline: "Modern Skills. Healthy Professionals. Stronger Community.",
+    description:
+      "A professional association dedicated to modernizing men's barbering and grooming in Ethiopia through professional development, workplace safety, health awareness, and community development.",
+    logoAlt: "Ethiopian Barbers & Owners Association logo",
+  },
+  language: {
+    label: "Language",
+    select: "Select language",
+    amharic: "Amharic",
+    english: "English",
+  },
+  nav: {
+    home: "Home",
+    about: "About",
+    goals: "Goals",
+    events: "Events",
+    jobs: "Jobs",
+    news: "News",
+    membership: "Membership",
+    gallery: "Gallery",
+    contact: "Contact",
+    joinUs: "Join Us",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    goHome: "Go to homepage",
+  },
+  hero: {
+    titleStart: "Modernizing Men's Grooming in ",
+    titleHighlight: "Ethiopia",
+    titleEnd: "",
+    subtitle:
+      "Building a stronger, healthier, and more professional community for men's hairdressing and grooming professionals across Ethiopia.",
+    join: "Join the Association",
+    learn: "Learn About Us",
+    imageAlt: "Professional men's grooming in Ethiopia",
+    scrollAbout: "Scroll to about section",
+    values: {
+      professionalism: "Professionalism",
+      training: "Training",
+      health: "Health",
+      community: "Community",
+    },
+  },
+  about: {
+    title: "About the Association",
+    subtitle:
+      "A professional organization dedicated to elevating men's hairdressing and grooming standards across Ethiopia.",
+    imageAlt: "Professional barber training",
+    paragraph1:
+      "The Ethiopian Hairdressers and Owners Association (EBOA) represents a united front of professional barbers, hairdressers, and barbershop owners committed to transforming the men's grooming industry in Ethiopia.",
+    paragraph2:
+      "We believe that modern skills, healthy workplaces, and strong community connections are the foundation of a respected and thriving profession. Our association works tirelessly to protect member interests, promote occupational health, and introduce international grooming standards.",
+    established: "Est. Professional Excellence",
+    visionTitle: "Vision",
+    vision:
+      "To modernize the art of men's hairdressing in Ethiopia; to build a strong and accessible association that protects the social and health interests of its members.",
+    missionTitle: "Mission",
+    mission:
+      "To enhance the professional skills of men's hairdressing professionals and create awareness about health problems encountered in the workplace.",
+  },
+  goals: {
+    title: "Our Goals",
+    subtitle: "Building a healthier, safer, and more skilled grooming profession in Ethiopia.",
+    items: {
+      healthcare: {
+        title: "Healthcare",
+        description:
+          "Organize a series of sports events and Mazega activities to promote physical health, fitness, and social connection among members.",
+      },
+      workplaceSafety: {
+        title: "Workplace Safety",
+        description:
+          "Provide safety and hygiene training to prevent health problems caused by long hours of standing and regular workplace exposure in the hairdressing profession.",
+      },
+      professionalDevelopment: {
+        title: "Professional Development",
+        description:
+          "Introduce men's hairdressing professionals to modern technologies and international trends in hair styling, beard care, and facial care (Grooming).",
+      },
+    },
+    supporting: {
+      skillsDevelopment: "Skills Development",
+      modernTechniques: "Modern Techniques",
+      hygieneSanitation: "Hygiene & Sanitation",
+      occupationalHealth: "Occupational Health",
+      technologyAdoption: "Technology Adoption",
+      professionalNetworking: "Professional Networking",
+      communityDevelopment: "Community Development",
+    },
+  },
+  development: {
+    title: "Grow Your Skills. Modernize Your Craft.",
+    subtitle:
+      "The association supports professional barbers through modern education and exposure to international grooming techniques.",
+    becomeMember: "Become a Member",
+    features: {
+      modernHairStyling: {
+        title: "Modern Hair Styling",
+        description: "Learn contemporary men's haircutting and styling techniques.",
+      },
+      beardGrooming: {
+        title: "Beard Grooming",
+        description: "Develop professional skills in beard shaping, trimming, styling, and maintenance.",
+      },
+      facialCare: {
+        title: "Facial Care",
+        description: "Introduce modern men's facial-care and grooming practices.",
+      },
+      modernTechnology: {
+        title: "Modern Technology",
+        description: "Explore new tools, equipment, technologies, and international barbering trends.",
+      },
+      professionalTraining: {
+        title: "Professional Training",
+        description: "Support continuous learning and professional development.",
+      },
+    },
+  },
+  health: {
+    title: "Healthy Professionals. Safer Workplaces.",
+    subtitle:
+      "Protecting barbering professionals from occupational health challenges through education, training, and awareness.",
+    topics: {
+      workplaceHygiene: {
+        title: "Workplace Hygiene",
+        description: "Maintaining clean and sanitized work environments.",
+      },
+      toolSanitation: {
+        title: "Tool Sanitation",
+        description: "Proper cleaning and sterilization of equipment.",
+      },
+      safePractices: {
+        title: "Safe Practices",
+        description: "Implementing safe working procedures daily.",
+      },
+      standingHours: {
+        title: "Standing Hours",
+        description: "Managing health risks from prolonged standing.",
+      },
+      ergonomics: {
+        title: "Ergonomics",
+        description: "Proper posture and workspace setup.",
+      },
+      healthAwareness: {
+        title: "Health Awareness",
+        description: "Recognizing occupational health challenges.",
+      },
+      protectivePractices: {
+        title: "Protective Practices",
+        description: "Personal protective equipment and habits.",
+      },
+      customerHygiene: {
+        title: "Customer Hygiene",
+        description: "Ensuring hygiene for clients and professionals.",
+      },
+    },
+  },
+  membershipSection: {
+    title: "Become a Member",
+    subtitle:
+      "Join a professional community committed to modernizing men's hairdressing, improving workplace health and safety, and creating new opportunities for professional growth.",
+    apply: "Apply for Membership",
+  },
+  homePosts: {
+    events: {
+      title: "Latest Events",
+      subtitle: "Training programs, community activities, and professional development opportunities.",
+      viewAll: "View All Events",
+    },
+    jobs: {
+      title: "Job Opportunities",
+      subtitle: "Career openings for barbers and barbershop owners.",
+      viewAll: "View All Jobs",
+    },
+    news: {
+      title: "News & Updates",
+      subtitle: "Announcements and updates from the association.",
+      viewAll: "View All News",
+    },
+  },
+  gallery: {
+    title: "Gallery",
+    subtitle: "Moments from our training programs, community events, and professional activities.",
+    closeLightbox: "Close lightbox",
+    previousImage: "Previous image",
+    nextImage: "Next image",
+    categories: {
+      all: "All",
+      hairStyling: "Hair Styling",
+      beardGrooming: "Beard Grooming",
+      barbers: "Barbers",
+      barbershops: "Barbershops",
+      training: "Training",
+      events: "Events",
+      community: "Community",
+    },
+    alts: {
+      professionalHairStyling: "Professional hair styling",
+      professionalBarberAtWork: "Professional barber at work",
+      beardGroomingSession: "Beard grooming session",
+      modernHairStylingTechniques: "Modern hair styling techniques",
+      professionalBarbershopInterior: "Professional barbershop interior",
+      professionalTrainingSession: "Professional training session",
+      communityGathering: "Community gathering",
+      associationEvent: "Association event",
+      barberProfessionalPortrait: "Barber professional portrait",
+      communitySportsEvent: "Community sports event",
+      skillsDevelopmentWorkshop: "Skills development workshop",
+      membersCommunityActivity: "Members community activity",
+      modernBarbershop: "Modern barbershop",
+      beardStylingExpertise: "Beard styling expertise",
+    },
+  },
+  statistics: {
+    title: "Our Impact",
+    subtitle:
+      "Growing together as a professional community dedicated to excellence in men's grooming.",
+    barbers: "Barbers",
+    barbershopOwners: "Barbershop Owners",
+  },
+  cta: {
+    title: "Shape the Future of Men's Grooming in Ethiopia",
+    subtitle:
+      "Join a growing professional community dedicated to better skills, healthier workplaces, and modern grooming standards.",
+    join: "Join the Association",
+    contact: "Contact Us",
+  },
+  faq: {
+    title: "Frequently Asked Questions",
+    subtitle: "Find answers to common questions about membership and the association.",
+    items: [
+      {
+        question: "Who can become a member?",
+        answer: "Professional barbers and barbershop owners who meet the association's requirements.",
+      },
+      {
+        question: "What is the minimum age?",
+        answer: "Applicants must be 18 years or older.",
+      },
+      {
+        question: "Can I apply online?",
+        answer: "Yes. Applicants can complete the membership application online or in person.",
+      },
+      {
+        question: "What identification documents are accepted?",
+        answer: "A renewed resident ID, passport, or driver's license.",
+      },
+      {
+        question: "What documents are required from a barbershop owner?",
+        answer: "A renewed business license.",
+      },
+      {
+        question: "What documents are required from a professional barber?",
+        answer: "A COC certificate or proof of work experience in a barbershop.",
+      },
+      {
+        question: "How many photographs are required?",
+        answer: "Two recent head photographs for the membership ID.",
+      },
+      {
+        question: "What fees are required?",
+        answer: "The registration fee and the first monthly subscription.",
+      },
+    ],
+  },
+  contact: {
+    title: "Contact Us",
+    subtitle: "Get in touch with the Ethiopian Hairdressers and Owners Association.",
+    phone: "Phone",
+    email: "Email",
+    officeAddress: "Office Address",
+    addressValue: "Addis Ababa, Ethiopia",
+    followUs: "Follow Us",
+    mapsPlaceholder: "Google Maps Location",
+    formTitle: "Send Us a Message",
+    name: "Name *",
+    namePlaceholder: "Your full name",
+    phoneLabel: "Phone *",
+    emailLabel: "Email *",
+    subject: "Subject *",
+    subjectPlaceholder: "How can we help?",
+    message: "Message *",
+    messagePlaceholder: "Your message...",
+    send: "Send Message",
+    sending: "Sending...",
+    success: "Your message has been sent successfully!",
+    error: "Failed to send message. Please try again.",
+    errors: {
+      nameMin: "Name must be at least 2 characters",
+      phoneInvalid: "Please enter a valid phone number",
+      emailInvalid: "Please enter a valid email address",
+      subjectMin: "Subject must be at least 3 characters",
+      messageMin: "Message must be at least 10 characters",
+    },
+  },
+  footer: {
+    association: "Association",
+    description: "A professional organization dedicated to modernizing men's hairdressing and grooming in Ethiopia.",
+    quickLinks: "Quick Links",
+    membership: "Membership",
+    applyOnline: "Apply Online",
+    contactSocial: "Contact & Social",
+    rights: "All Rights Reserved.",
+  },
+  common: {
+    backToTop: "Back to top",
+    readMore: "Read More",
+    back: "Back",
+    backHome: "Back to Homepage",
+    returnHome: "Return to Homepage",
+    contact: "Contact",
+    postNotFound: "Post not found.",
+    backToHome: "Back to Home",
+  },
+  posts: {
+    types: {
+      event: "Event",
+      job: "Job",
+      announcement: "Announcement",
+      general: "General",
+    },
+    eventsPage: {
+      title: "Events",
+      subtitle: "Training programs, community activities, and professional development opportunities.",
+      empty: "No events posted yet. Check back soon.",
+    },
+    jobsPage: {
+      title: "Job Opportunities",
+      subtitle: "Career and employment opportunities for barbers and barbershop owners.",
+      empty: "No job posts yet. Check back soon.",
+    },
+    newsPage: {
+      title: "News & Updates",
+      subtitle: "Announcements and updates from the Ethiopian Barbers & Owners Association.",
+      empty: "No news posted yet. Check back soon.",
+    },
+  },
+  membership: {
+    title: "Membership Application",
+    subtitle: "Complete the form below to apply for membership.",
+    fullName: "Full Name of the Member *",
+    fullNamePlaceholder: "Enter your full name",
+    phone: "Phone Number *",
+    email: "Email",
+    optional: "(optional)",
+    barbershopName: "Barbershop Name *",
+    barbershopNamePlaceholder: "Name of barbershop",
+    address: "Address *",
+    addressPlaceholder: "Full address",
+    memberType: "Member Type *",
+    barber: "Barber",
+    owner: "Barbershop Owner",
+    membershipLevel: "Membership Level *",
+    gold: "Gold Level",
+    silver: "Silver Level",
+    white: "White Level",
+    photos: "Photos",
+    photosSelected: "{count} photo(s) selected",
+    photosHint: "Click to upload photos (optional)",
+    submit: "Submit Membership Application",
+    submitting: "Submitting Application...",
+    successTitle: "Application Submitted Successfully",
+    successBody:
+      "Thank you for applying to join the Ethiopian Barbers and Owners Association. Your application has been received and is under review.",
+    reference: "Application Reference",
+    submitSuccess: "Application submitted successfully!",
+    submitError: "Failed to submit application",
+    errors: {
+      fullName: "Full name is required",
+      phone: "Please enter a valid phone number",
+      email: "Please enter a valid email address",
+      barbershopName: "Barbershop name is required",
+      address: "Address is required",
+      applicantType: "Please select Barber or Barbershop Owner",
+      membershipLevel: "Please select a membership level",
+    },
+  },
+};
+
+export default en;
+export type Translations = typeof en;

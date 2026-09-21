@@ -5,10 +5,12 @@ import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/layout/BackToTop";
 import PostCard from "@/components/posts/PostCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useI18n } from "@/components/i18n/LanguageProvider";
 import { PublicPost } from "@/lib/post-display";
 import { useEffect, useState } from "react";
 
 export default function NewsPageClient() {
+  const { t } = useI18n();
   const [posts, setPosts] = useState<PublicPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,8 +37,8 @@ export default function NewsPageClient() {
       <main className="pt-24 pb-16 bg-off-white min-h-screen">
         <div className="container mx-auto px-4 lg:px-8">
           <SectionHeading
-            title="News & Updates"
-            subtitle="Announcements and updates from the Ethiopian Barbers & Owners Association."
+            title={t.posts.newsPage.title}
+            subtitle={t.posts.newsPage.subtitle}
           />
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -45,7 +47,7 @@ export default function NewsPageClient() {
               ))}
             </div>
           ) : posts.length === 0 ? (
-            <p className="text-center text-gray-500 py-16">No news posted yet. Check back soon.</p>
+            <p className="text-center text-gray-500 py-16">{t.posts.newsPage.empty}</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (

@@ -8,7 +8,33 @@ async function main() {
     process.exit(1);
   }
 
-  const connectionString = process.env.DATABASE_URL;
+  const rawConnectionString = process.env.DATABASE_URL;
+  const isPlaceholder =
+    !rawConnectionString ||
+    rawConnectionString.includes("://...") ||
+    /USER:PASSWORD|your-host|HOST\/DATABASE/i.test(rawConnectionString);
+
+  if (isPlaceholder) {
+    console.error("DATABASE_URL is required");
+    process.exit(1);
+  }
+
+  const connectionString = (() => {
+    if (process.env.RENDER === "true") return rawConnectionString;
+    try {
+      const url = new URL(rawConnectionString);
+      if (/^dpg-[a-z0-9]+(?:-[a-z0-9]+)*-a$/.test(url.hostname)) {
+        const region = process.env.RENDER_POSTGRES_REGION || "oregon";
+        url.hostname = `${url.hostname}.${region}-postgres.render.com`;
+        if (!url.searchParams.get("sslmode")) {
+          url.searchParams.set("sslmode", "require");
+        }
+      }
+      return url.toString();
+    } catch {
+      return rawConnectionString;
+    }
+  })();
   const isLocal =
     connectionString.includes("localhost") ||
     connectionString.includes("127.0.0.1");
