@@ -17,9 +17,20 @@ export const CONTACT = {
     youtube: "https://www.youtube.com/@EBOAEthiopia",
     tiktok: "https://www.tiktok.com/@eboa11",
     instagram: "#",
-    telegram: "#",
+    telegram: "https://t.me/barberinvoice_bot",
   },
 };
+
+/** Default bot username for invoice delivery deep links (override with TELEGRAM_BOT_USERNAME). */
+export const TELEGRAM_BOT_USERNAME = "barberinvoice_bot";
+export const TELEGRAM_INVOICE_BOT_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
+
+/** Deep link so Telegram /start includes the membership application reference. */
+export function telegramInvoiceBotDeepLink(applicationRef: string) {
+  const ref = applicationRef.trim();
+  if (!ref) return TELEGRAM_INVOICE_BOT_URL;
+  return `${TELEGRAM_INVOICE_BOT_URL}?start=${encodeURIComponent(ref)}`;
+}
 
 export const MEMBERSHIP_PAYMENT = {
   bankName: "Commercial Bank of Ethiopia",

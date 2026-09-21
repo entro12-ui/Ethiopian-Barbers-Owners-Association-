@@ -323,7 +323,9 @@ export default function MembershipQueue() {
 
             {invoice && (
               <div>
-                <h3 className="text-sm font-semibold text-charcoal mb-2">Payment invoice</h3>
+                <h3 className="text-sm font-semibold text-charcoal mb-2">
+                  Uploaded payment receipt (bank or Telebirr)
+                </h3>
                 {invoice.mimeType.startsWith("image/") ? (
                   <a
                     href={`/api/admin/memberships/${detail.id}/document?type=${PAYMENT_INVOICE_TYPE}`}
@@ -403,20 +405,32 @@ export default function MembershipQueue() {
               </div>
             )}
 
+            {detail.status !== "approved" && (
+              <p className="text-xs text-gray-500">
+                The official membership invoice PDF is created from your template only after you click Approve.
+                The image or PDF above is the member&apos;s bank or Telebirr proof of payment.
+              </p>
+            )}
+
             {detail.status === "approved" && stamped && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={sendTelegramInvoice}
-                disabled={isSendingTelegram}
-              >
-                {isSendingTelegram ? (
-                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4 mr-1" />
-                )}
-                Send invoice via Telegram
-              </Button>
+              <>
+                <p className="text-xs text-gray-500">
+                  Official invoice was generated from the EBOA header/footer template after approval.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={sendTelegramInvoice}
+                  disabled={isSendingTelegram}
+                >
+                  {isSendingTelegram ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4 mr-1" />
+                  )}
+                  Send invoice via Telegram
+                </Button>
+              </>
             )}
           </div>
         )}

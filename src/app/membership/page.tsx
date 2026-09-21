@@ -8,7 +8,7 @@ import Logo from "@/components/ui/Logo";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useI18n } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/hooks/useToast";
-import { MEMBERSHIP_PAYMENT } from "@/lib/constants";
+import { MEMBERSHIP_PAYMENT, telegramInvoiceBotDeepLink } from "@/lib/constants";
 import { interpolate } from "@/lib/i18n";
 import { ALLOWED_INVOICE_TYPES, MAX_FILE_SIZE } from "@/lib/membership";
 import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
@@ -79,7 +79,9 @@ export default function MembershipPage() {
       }
 
       setApplicationId(result.applicationId);
-      setTelegramBotLink(result.telegramBotLink || null);
+      setTelegramBotLink(
+        result.telegramBotLink || telegramInvoiceBotDeepLink(result.applicationId)
+      );
       setIsSubmitted(true);
       showToast(t.membership.submitSuccess, "success");
     } catch (error) {
@@ -112,15 +114,17 @@ export default function MembershipPage() {
                 <p className="text-sm text-gray-500">{t.membership.reference}</p>
                 <p className="text-xl font-bold text-gold">{applicationId}</p>
               </div>
-              <p className="text-sm text-gray-600 mb-6">{t.membership.telegramStartHint}</p>
+              <p className="text-sm text-gray-600 mb-4">{t.membership.telegramStartHint}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                {telegramBotLink && (
-                  <a href={telegramBotLink} target="_blank" rel="noreferrer">
-                    <Button>{t.membership.telegramStartCta}</Button>
-                  </a>
-                )}
+                <a
+                  href={telegramBotLink || telegramInvoiceBotDeepLink(applicationId)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button>{t.membership.telegramStartCta}</Button>
+                </a>
                 <Link href={`/membership/status?ref=${encodeURIComponent(applicationId)}`}>
-                  <Button variant={telegramBotLink ? "outline" : "primary"}>{t.membership.checkStatus}</Button>
+                  <Button variant="outline">{t.membership.checkStatus}</Button>
                 </Link>
                 <Link href="/">
                   <Button variant="outline">{t.common.returnHome}</Button>

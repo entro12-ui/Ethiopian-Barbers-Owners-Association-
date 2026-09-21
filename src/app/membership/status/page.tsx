@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/layout/BackToTop";
 import Button from "@/components/ui/Button";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { telegramInvoiceBotDeepLink } from "@/lib/constants";
 import { ArrowLeft, Download, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
@@ -140,10 +141,13 @@ function MembershipStatusForm() {
                         : t.membership.telegramApprovedNotLinked}
                     </p>
                   )}
-                  {result.telegramBotLink && !result.telegramLinked && (
+                  {!result.telegramLinked && (
                     <p className="mt-3">
                       <a
-                        href={result.telegramBotLink}
+                        href={
+                          result.telegramBotLink ||
+                          telegramInvoiceBotDeepLink(result.applicationRef)
+                        }
                         target="_blank"
                         rel="noreferrer"
                         className="text-sm text-gold hover:underline"

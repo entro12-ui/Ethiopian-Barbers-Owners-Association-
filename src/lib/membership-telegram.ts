@@ -1,17 +1,18 @@
-import { SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, TELEGRAM_BOT_USERNAME } from "@/lib/constants";
 
 export function telegramConfigured() {
   return Boolean(process.env.TELEGRAM_BOT_TOKEN?.trim());
 }
 
 export function getTelegramBotUsername() {
-  return (process.env.TELEGRAM_BOT_USERNAME || "").replace(/^@+/, "").trim();
+  const fromEnv = (process.env.TELEGRAM_BOT_USERNAME || "").replace(/^@+/, "").trim();
+  return fromEnv || TELEGRAM_BOT_USERNAME;
 }
 
 export function telegramBotDeepLink(applicationRef: string) {
   const username = getTelegramBotUsername();
-  if (!username) return null;
-  return `https://t.me/${username}?start=${encodeURIComponent(applicationRef)}`;
+  if (!username || !applicationRef.trim()) return null;
+  return `https://t.me/${username}?start=${encodeURIComponent(applicationRef.trim())}`;
 }
 
 async function telegramApi(method: string, body: FormData | Record<string, unknown>) {
