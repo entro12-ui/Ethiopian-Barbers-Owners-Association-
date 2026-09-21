@@ -54,6 +54,11 @@ export default function Footer() {
                   {t.footer.applyOnline}
                 </Link>
               </li>
+              <li>
+                <Link href="/admin/login" className="hover:text-gold transition-colors">
+                  {t.footer.adminLogin}
+                </Link>
+              </li>
             </ul>
           </div>
 

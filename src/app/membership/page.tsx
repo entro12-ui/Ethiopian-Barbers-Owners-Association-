@@ -8,7 +8,9 @@ import Logo from "@/components/ui/Logo";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useI18n } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/hooks/useToast";
+import { MEMBERSHIP_PAYMENT } from "@/lib/constants";
 import { interpolate } from "@/lib/i18n";
+import { ALLOWED_INVOICE_TYPES, MAX_FILE_SIZE } from "@/lib/membership";
 import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Loader2, ArrowLeft, Upload } from "lucide-react";
@@ -23,6 +25,7 @@ export default function MembershipPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
+  const [invoice, setInvoice] = useState<File | null>(null);
   const schema = useMemo(() => createMembershipFormSchema(t), [t]);
 
   const {
@@ -39,6 +42,15 @@ export default function MembershipPage() {
   });
 
   const onSubmit = async (data: MembershipFormData) => {
+    if (!invoice) {
+      showToast(t.membership.invoiceRequired, "error");
+      return;
+    }
+    if (invoice.size > MAX_FILE_SIZE || !ALLOWED_INVOICE_TYPES.includes(invoice.type)) {
+      showToast(t.membership.invoiceHint, "error");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();
@@ -50,6 +62,7 @@ export default function MembershipPage() {
       formData.append("applicantType", data.applicantType);
       formData.append("membershipLevel", data.membershipLevel);
       photos.forEach((photo) => formData.append("photos", photo));
+      formData.append("invoice", invoice);
 
       const response = await fetch("/api/membership", {
         method: "POST",
@@ -95,9 +108,14 @@ export default function MembershipPage() {
                 <p className="text-sm text-gray-500">{t.membership.reference}</p>
                 <p className="text-xl font-bold text-gold">{applicationId}</p>
               </div>
-              <Link href="/">
-                <Button>{t.common.returnHome}</Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link href={`/membership/status?ref=${encodeURIComponent(applicationId)}`}>
+                  <Button>{t.membership.checkStatus}</Button>
+                </Link>
+                <Link href="/">
+                  <Button variant="outline">{t.common.returnHome}</Button>
+                </Link>
+              </div>
             </div>
           </div>
         </main>
@@ -130,6 +148,11 @@ export default function MembershipPage() {
             </h1>
             <p className="text-gray-600 max-w-xl mx-auto">
               {t.membership.subtitle}
+            </p>
+            <p className="mt-4">
+              <Link href="/membership/status" className="text-sm text-gold hover:underline">
+                {t.membership.checkStatus}
+              </Link>
             </p>
           </div>
 
@@ -260,6 +283,57 @@ export default function MembershipPage() {
                       {photos.length > 0
                         ? interpolate(t.membership.photosSelected, { count: photos.length })
                         : t.membership.photosHint}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-4">
+              <div>
+                <h2 className="text-xl font-bold text-charcoal mb-2">{t.membership.paymentTitle}</h2>
+                <p className="text-sm text-gray-600 leading-relaxed">{t.membership.paymentIntro}</p>
+              </div>
+              <div className="bg-off-white p-4 rounded-sm space-y-2 text-sm">
+                <p>
+                  <span className="text-gray-500">{t.membership.bankName}:</span>{" "}
+                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.bankName}</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">{t.membership.accountName}:</span>{" "}
+                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountName}</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">{t.membership.accountNumber}:</span>{" "}
+                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountNumber}</span>
+                </p>
+                <p>
+                  <span className="text-gray-500">{t.membership.telebirr}:</span>{" "}
+                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.telebirr}</span>
+                </p>
+                <div className="pt-2 space-y-1 text-gold font-semibold">
+                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.gold, fee: MEMBERSHIP_PAYMENT.fees.gold })}</p>
+                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.silver, fee: MEMBERSHIP_PAYMENT.fees.silver })}</p>
+                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.white, fee: MEMBERSHIP_PAYMENT.fees.white })}</p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-charcoal mb-2">
+                  {t.membership.invoice}
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    onChange={(e) => setInvoice(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="flex items-center gap-3 px-4 py-3 border border-dashed border-gray-300 rounded-sm hover:border-gold transition-colors bg-gray-50">
+                    <Upload className="w-5 h-5 text-gray-400 shrink-0" />
+                    <span className="text-sm text-gray-500 truncate">
+                      {invoice
+                        ? interpolate(t.membership.invoiceSelected, { name: invoice.name })
+                        : t.membership.invoiceHint}
                     </span>
                   </div>
                 </div>

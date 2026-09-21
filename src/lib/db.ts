@@ -67,6 +67,7 @@ export async function initializeDatabase(): Promise<void> {
         barbershop_address TEXT,
         applicant_type TEXT NOT NULL CHECK (applicant_type IN ('owner', 'barber')),
         membership_level TEXT NOT NULL DEFAULT 'white' CHECK (membership_level IN ('gold', 'silver', 'white')),
+        membership_id TEXT,
         status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'under_review', 'approved', 'rejected')),
         agreement BOOLEAN NOT NULL DEFAULT true,
         submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -151,8 +152,17 @@ export async function initializeDatabase(): Promise<void> {
       ALTER TABLE membership_applications ALTER COLUMN email DROP NOT NULL;
       ALTER TABLE membership_applications ALTER COLUMN city DROP NOT NULL;
       ALTER TABLE membership_applications
-        ADD COLUMN IF NOT EXISTS membership_level TEXT NOT NULL DEFAULT 'white'
-        CHECK (membership_level IN ('gold', 'silver', 'white'));
+        ADD COLUMN IF NOT EXISTS membership_level TEXT NOT NULL DEFAULT 'white';
+      ALTER TABLE membership_applications
+        ADD COLUMN IF NOT EXISTS membership_id TEXT;
+    `).catch(() => {});
+
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_membership_id
+        ON membership_applications(membership_id)
+        WHERE membership_id IS NOT NULL;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_application_documents_type
+        ON application_documents(application_id, document_type);
     `).catch(() => {});
 
     initialized = true;

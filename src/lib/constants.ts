@@ -21,6 +21,21 @@ export const CONTACT = {
   },
 };
 
+export const MEMBERSHIP_PAYMENT = {
+  bankName: "Commercial Bank of Ethiopia",
+  accountName: "Ethiopian Barbers & Owners Association",
+  accountNumber: "1000123456789",
+  telebirr: "+251911237470",
+  officerTitle: "Association President",
+  officerName: "EBOA President",
+  signaturePath: "public/images/admin-signature.png",
+  fees: {
+    gold: "ETB 2,000",
+    silver: "ETB 1,200",
+    white: "ETB 800",
+  },
+};
+
 export const NAV_LINKS = [
   { key: "home", href: "/#home" },
   { key: "about", href: "/#about" },

@@ -1,19 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase, isDatabaseConfigured } from "@/lib/db";
 import {
   ALLOWED_FILE_TYPES,
+  ALLOWED_INVOICE_TYPES,
   MAX_FILE_SIZE,
+  MEMBERSHIP_ID_CARD_TYPE,
+  PAYMENT_INVOICE_TYPE,
   PHOTO_DOCUMENT_TYPES,
+  STAMPED_INVOICE_TYPE,
 } from "@/lib/membership";
 import {
   createMembershipApplication,
   getMembershipApplicationByRef,
   DocumentInput,
 } from "@/lib/membership-db";
+import { notifyAdminNewMembership } from "@/lib/membership-email";
 import { membershipFormSchema } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Membership applications cannot be saved right now." },
+        { status: 503 }
+      );
+    }
     await initializeDatabase();
 
     const formData = await request.formData();
@@ -68,6 +79,31 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const invoiceFile = formData.get("invoice") as File | null;
+    if (!invoiceFile?.size) {
+      return NextResponse.json({ error: "Payment invoice is required" }, { status: 400 });
+    }
+    if (invoiceFile.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `Invoice "${invoiceFile.name}" exceeds maximum size of 5MB` },
+        { status: 400 }
+      );
+    }
+    if (!ALLOWED_INVOICE_TYPES.includes(invoiceFile.type)) {
+      return NextResponse.json(
+        { error: `Invoice "${invoiceFile.name}" has invalid type. Allowed: JPEG, PNG, WebP, PDF` },
+        { status: 400 }
+      );
+    }
+
+    documents.push({
+      documentType: PAYMENT_INVOICE_TYPE,
+      fileName: invoiceFile.name,
+      mimeType: invoiceFile.type,
+      fileSize: invoiceFile.size,
+      fileData: Buffer.from(await invoiceFile.arrayBuffer()),
+    });
+
     const application = await createMembershipApplication(
       {
         fullName: parsed.fullName,
@@ -80,6 +116,12 @@ export async function POST(request: NextRequest) {
       },
       documents
     );
+
+    await notifyAdminNewMembership({
+      applicationRef: application.applicationRef,
+      fullName: parsed.fullName,
+      membershipLevel: parsed.membershipLevel,
+    }).catch((error) => console.error("Admin membership email failed:", error));
 
     return NextResponse.json(
       {
@@ -98,12 +140,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    await initializeDatabase();
-
     const ref = request.nextUrl.searchParams.get("ref");
     if (!ref) {
       return NextResponse.json({ error: "Application reference is required" }, { status: 400 });
     }
+
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
+    await initializeDatabase();
 
     const application = await getMembershipApplicationByRef(ref);
     if (!application) {
@@ -111,15 +156,20 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      applicationId: application.application_ref,
-      fullName: application.full_name,
+      applicationRef: application.applicationRef,
+      fullName: application.fullName,
       status: application.status,
-      applicantType: application.applicant_type,
-      membershipLevel: application.membership_level,
-      submittedAt: application.submitted_at,
-      updatedAt: application.updated_at,
-      reviewedAt: application.reviewed_at,
-      documentsUploaded: application.documents_count,
+      applicantType: application.applicantType,
+      membershipLevel: application.membershipLevel,
+      membershipId: application.status === "approved" ? application.membershipId : null,
+      submittedAt: application.submittedAt,
+      updatedAt: application.updatedAt,
+      reviewedAt: application.reviewedAt,
+      reviewNotes: application.status === "rejected" ? application.reviewNotes : null,
+      documents: {
+        idCard: application.documents.some((doc) => doc.documentType === MEMBERSHIP_ID_CARD_TYPE),
+        invoice: application.documents.some((doc) => doc.documentType === STAMPED_INVOICE_TYPE),
+      },
     });
   } catch (error) {
     console.error("Membership status error:", error);

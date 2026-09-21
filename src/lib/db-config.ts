@@ -2,7 +2,7 @@ export function isPlaceholderDatabaseUrl(connectionString: string | undefined): 
   if (!connectionString?.trim()) return true;
   return (
     connectionString.includes("://...") ||
-    /USER:PASSWORD|your-host|HOST\/DATABASE/i.test(connectionString)
+    /:PASSWORD@|USER:PASSWORD|your-host|HOST\/DATABASE/i.test(connectionString)
   );
 }
 

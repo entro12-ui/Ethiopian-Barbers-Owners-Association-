@@ -96,6 +96,12 @@ export default function Navbar() {
 
           <div className="hidden xl:flex items-center gap-3">
             <LanguageSwitcher />
+            <Link
+              href="/admin/login"
+              className="px-3 py-2 text-sm text-gray-300 hover:text-gold transition-colors whitespace-nowrap"
+            >
+              {t.nav.adminLogin}
+            </Link>
             <Link href="/membership">
               <Button size="sm">{t.nav.joinUs}</Button>
             </Link>
@@ -141,9 +147,16 @@ export default function Navbar() {
             </div>
           ))}
           <LanguageSwitcher variant="menu" />
-          <div className="mt-4 px-4">
+          <div className="mt-4 px-4 space-y-3">
             <Link href="/membership" onClick={() => setIsMobileOpen(false)}>
               <Button className="w-full">{t.nav.joinUs}</Button>
+            </Link>
+            <Link
+              href="/admin/login"
+              onClick={() => setIsMobileOpen(false)}
+              className="block text-center px-4 py-3 text-gray-300 hover:text-gold hover:bg-white/5 rounded-sm transition-all"
+            >
+              {t.nav.adminLogin}
             </Link>
           </div>
         </div>

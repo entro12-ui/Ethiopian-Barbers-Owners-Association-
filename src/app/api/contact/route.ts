@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeDatabase } from "@/lib/db";
+import { initializeDatabase, isDatabaseConfigured } from "@/lib/db";
 import { createContactMessage } from "@/lib/membership-db";
 import { contactFormSchema } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isDatabaseConfigured()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Messages cannot be saved right now." },
+        { status: 503 }
+      );
+    }
     await initializeDatabase();
 
     const body = await request.json();

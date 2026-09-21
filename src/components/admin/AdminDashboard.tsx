@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import MembershipQueue from "@/components/admin/MembershipQueue";
 import { getPostTypeLabel } from "@/lib/post-display";
 import { Loader2, LogOut, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -22,9 +23,9 @@ export default function AdminDashboard() {
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [section, setSection] = useState<"posts" | "memberships">("posts");
 
   const loadPosts = useCallback(async () => {
-    setIsLoading(true);
     try {
       const url =
         filter === "all" ? "/api/admin/posts" : `/api/admin/posts?type=${filter}`;
@@ -43,8 +44,32 @@ export default function AdminDashboard() {
   }, [filter, router]);
 
   useEffect(() => {
-    loadPosts();
-  }, [loadPosts]);
+    let cancelled = false;
+    const url =
+      filter === "all" ? "/api/admin/posts" : `/api/admin/posts?type=${filter}`;
+    fetch(url, { cache: "no-store" })
+      .then(async (response) => {
+        if (cancelled) return null;
+        if (response.status === 401) {
+          router.push("/admin/login");
+          return null;
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (cancelled || !data) return;
+        setPosts(data.posts || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setPosts([]);
+        setIsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [filter, router]);
 
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -79,7 +104,9 @@ export default function AdminDashboard() {
         <div className="container mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">EBOA Admin</h1>
-            <p className="text-gray-400 text-sm">Manage events, jobs, and announcements</p>
+            <p className="text-gray-400 text-sm">
+              {section === "memberships" ? "Review membership applications" : "Manage events, jobs, and announcements"}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/">
@@ -99,12 +126,35 @@ export default function AdminDashboard() {
       </header>
 
       <main className="container mx-auto px-4 lg:px-8 py-8">
+        <div className="flex flex-wrap gap-2 mb-6">
+          {(["posts", "memberships"] as const).map((item) => (
+            <button
+              key={item}
+              onClick={() => setSection(item)}
+              className={`px-4 py-2 text-sm rounded-sm capitalize transition-colors ${
+                section === item
+                  ? "bg-charcoal text-white font-semibold"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-gold"
+              }`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        {section === "memberships" ? (
+          <MembershipQueue />
+        ) : (
+        <>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
             {["all", "event", "job", "announcement", "general"].map((type) => (
               <button
                 key={type}
-                onClick={() => setFilter(type)}
+                onClick={() => {
+                  setIsLoading(true);
+                  setFilter(type);
+                }}
                 className={`px-3 py-1.5 text-sm rounded-sm capitalize transition-colors ${
                   filter === type
                     ? "bg-gold text-charcoal font-semibold"
@@ -192,6 +242,8 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>

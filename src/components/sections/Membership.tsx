@@ -35,6 +35,11 @@ export default function Membership() {
           <Link href="/membership">
             <Button size="lg">{t.membershipSection.apply}</Button>
           </Link>
+          <div className="mt-4">
+            <Link href="/membership/status" className="text-sm text-gold hover:underline">
+              {t.membershipSection.checkStatus}
+            </Link>
+          </div>
         </AnimatedCard>
       </div>
     </section>
