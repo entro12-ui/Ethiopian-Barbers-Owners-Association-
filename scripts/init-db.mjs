@@ -62,13 +62,10 @@ function parseDatabaseUrl(rawConnectionString) {
     }
   }
 
-  if (
-    !parsed.hostname.includes("localhost") &&
-    parsed.hostname !== "127.0.0.1" &&
-    !parsed.searchParams.get("sslmode")
-  ) {
-    parsed.searchParams.set("sslmode", "require");
-  }
+  // Newer `pg` treats sslmode=require as verify-full, which fails against
+  // Render's certificate. Strip URL SSL params and use Pool `ssl` instead.
+  parsed.searchParams.delete("sslmode");
+  parsed.searchParams.delete("uselibpqcompat");
 
   return { connectionString: parsed.toString(), schema };
 }
