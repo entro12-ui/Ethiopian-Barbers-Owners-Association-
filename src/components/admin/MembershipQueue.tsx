@@ -7,7 +7,7 @@ import {
   PHOTO_DOCUMENT_TYPES,
   STAMPED_INVOICE_TYPE,
 } from "@/lib/membership";
-import { Check, Loader2, Send, X } from "lucide-react";
+import { Bell, Check, Loader2, Send, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type ApplicationStatus = "pending" | "under_review" | "approved" | "rejected";
@@ -52,10 +52,22 @@ function statusColor(status: string) {
   return "bg-yellow-100 text-yellow-800";
 }
 
-export default function MembershipQueue() {
+interface MembershipQueueProps {
+  pendingCount?: number;
+  highlightIds?: string[];
+  refreshKey?: number;
+  onReviewPending?: () => void;
+}
+
+export default function MembershipQueue({
+  pendingCount = 0,
+  highlightIds = [],
+  refreshKey = 0,
+  onReviewPending,
+}: MembershipQueueProps) {
   const [applications, setApplications] = useState<MembershipApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | ApplicationStatus>("all");
+  const [filter, setFilter] = useState<"all" | ApplicationStatus>("pending");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<MembershipApplication | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
@@ -63,8 +75,10 @@ export default function MembershipQueue() {
   const [isSendingTelegram, setIsSendingTelegram] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
-  const loadApplications = useCallback(async () => {
+  const loadApplications = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     try {
       const url =
         filter === "all" ? "/api/admin/memberships" : `/api/admin/memberships?status=${filter}`;
@@ -99,16 +113,31 @@ export default function MembershipQueue() {
     };
   }, [filter]);
 
+  useEffect(() => {
+    if (refreshKey === 0) return;
+    setBannerDismissed(false);
+    void loadApplications(true);
+  }, [refreshKey, loadApplications]);
+
+  useEffect(() => {
+    if (highlightIds.length > 0) {
+      setBannerDismissed(false);
+    }
+  }, [highlightIds]);
+
   const openDetail = async (id: string) => {
     setSelectedId(id);
     setError("");
     setInfo("");
+    onReviewPending?.();
     const response = await fetch(`/api/admin/memberships/${id}`, { cache: "no-store" });
     const data = await response.json();
     setDetail(data.application || null);
     setReviewNotes(data.application?.reviewNotes || "");
   };
 
+  const showNewBanner = highlightIds.length > 0 && !bannerDismissed;
+  const highlightSet = new Set(highlightIds);
   const updateStatus = async (status: "approved" | "rejected") => {
     if (!selectedId) return;
     setIsSaving(true);
@@ -171,21 +200,77 @@ export default function MembershipQueue() {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
       <div>
+        {showNewBanner && (
+          <div className="mb-4 flex items-start gap-3 rounded-sm border border-gold/40 bg-gold/15 px-4 py-3 text-sm text-charcoal">
+            <Bell className="w-4 h-4 mt-0.5 shrink-0 text-gold" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold">
+                {highlightIds.length === 1
+                  ? "New pending application just arrived"
+                  : `${highlightIds.length} new pending applications just arrived`}
+              </p>
+              <p className="text-gray-600 mt-0.5">
+                Review them below — new rows are highlighted.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {filter !== "pending" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLoading(true);
+                    setFilter("pending");
+                    onReviewPending?.();
+                  }}
+                  className="text-xs font-semibold px-2 py-1 rounded-sm bg-charcoal text-white hover:bg-charcoal/90"
+                >
+                  Show pending
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setBannerDismissed(true);
+                  onReviewPending?.();
+                }}
+                className="p-1 text-gray-500 hover:text-charcoal"
+                aria-label="Dismiss notification"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-2 mb-4">
           {FILTERS.map((item) => (
             <button
               key={item.id}
-                onClick={() => {
-                  setIsLoading(true);
-                  setFilter(item.id);
-                }}
-              className={`px-3 py-1.5 text-sm rounded-sm transition-colors ${
+              onClick={() => {
+                setIsLoading(true);
+                setFilter(item.id);
+                if (item.id === "pending") onReviewPending?.();
+              }}
+              className={`relative px-3 py-1.5 text-sm rounded-sm transition-colors ${
                 filter === item.id
                   ? "bg-gold text-charcoal font-semibold"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-gold"
               }`}
             >
               {item.label}
+              {item.id === "pending" && pendingCount > 0 && (
+                <span
+                  className={`ml-1.5 inline-flex min-w-[1.15rem] h-[1.15rem] px-1 items-center justify-center rounded-full text-[10px] font-bold ${
+                    highlightIds.length > 0
+                      ? "bg-charcoal text-gold animate-pulse"
+                      : filter === item.id
+                        ? "bg-charcoal/80 text-white"
+                        : "bg-gold text-charcoal"
+                  }`}
+                >
+                  {pendingCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -211,29 +296,50 @@ export default function MembershipQueue() {
                   </tr>
                 </thead>
                 <tbody>
-                  {applications.map((application) => (
-                    <tr
-                      key={application.id}
-                      onClick={() => openDetail(application.id)}
-                      className={`border-b border-gray-50 hover:bg-gray-50/50 cursor-pointer ${
-                        selectedId === application.id ? "bg-gold/10" : ""
-                      }`}
-                    >
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-charcoal">{application.fullName}</div>
-                        <div className="text-xs text-gray-500">{application.applicationRef}</div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 capitalize">{application.membershipLevel}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${statusColor(application.status)}`}>
-                          {application.status.replace("_", " ")}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {new Date(application.submittedAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
+                  {applications.map((application) => {
+                    const isNew = highlightSet.has(application.id);
+                    return (
+                      <tr
+                        key={application.id}
+                        onClick={() => openDetail(application.id)}
+                        className={`border-b border-gray-50 hover:bg-gray-50/50 cursor-pointer transition-colors ${
+                          selectedId === application.id
+                            ? "bg-gold/10"
+                            : isNew
+                              ? "bg-gold/20 ring-1 ring-inset ring-gold/50"
+                              : ""
+                        }`}
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {isNew && (
+                              <span className="shrink-0 w-2 h-2 rounded-full bg-gold animate-pulse" />
+                            )}
+                            <div>
+                              <div className="font-medium text-charcoal">
+                                {application.fullName}
+                                {isNew && (
+                                  <span className="ml-2 text-[10px] uppercase tracking-wide font-bold text-gold">
+                                    New
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-500">{application.applicationRef}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 capitalize">{application.membershipLevel}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${statusColor(application.status)}`}>
+                            {application.status.replace("_", " ")}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-gray-500">
+                          {new Date(application.submittedAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

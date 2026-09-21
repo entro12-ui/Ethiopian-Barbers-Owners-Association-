@@ -2,11 +2,14 @@
 
 import Button from "@/components/ui/Button";
 import MembershipQueue from "@/components/admin/MembershipQueue";
+import ToastContainer from "@/components/ui/ToastContainer";
+import { useToast } from "@/hooks/useToast";
+import { playPendingChime } from "@/lib/pending-notify";
 import { getPostTypeLabel } from "@/lib/post-display";
-import { Loader2, LogOut, Pencil, Plus, Trash2 } from "lucide-react";
+import { Bell, Loader2, LogOut, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface AdminPost {
   id: string;
@@ -18,12 +21,26 @@ interface AdminPost {
   createdAt: string;
 }
 
+interface PendingSummary {
+  id: string;
+  fullName: string;
+}
+
+const PENDING_POLL_MS = 12_000;
+
 export default function AdminDashboard() {
   const router = useRouter();
+  const { toasts, showToast, dismissToast } = useToast();
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [section, setSection] = useState<"posts" | "memberships">("posts");
+  const [pendingCount, setPendingCount] = useState(0);
+  const [unseenPending, setUnseenPending] = useState(0);
+  const [highlightIds, setHighlightIds] = useState<string[]>([]);
+  const [listRefreshKey, setListRefreshKey] = useState(0);
+  const knownPendingIds = useRef<Set<string> | null>(null);
+  const highlightClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadPosts = useCallback(async () => {
     try {
@@ -71,6 +88,77 @@ export default function AdminDashboard() {
     };
   }, [filter, router]);
 
+  const pollPending = useCallback(async () => {
+    try {
+      const response = await fetch("/api/admin/memberships?status=pending", {
+        cache: "no-store",
+      });
+      if (response.status === 401) {
+        router.push("/admin/login");
+        return;
+      }
+      const data = await response.json();
+      const pending: PendingSummary[] = (data.applications || []).map(
+        (app: PendingSummary) => ({ id: app.id, fullName: app.fullName })
+      );
+      setPendingCount(pending.length);
+
+      const ids = new Set(pending.map((app) => app.id));
+      if (knownPendingIds.current === null) {
+        knownPendingIds.current = ids;
+        return;
+      }
+
+      const arrivals = pending.filter((app) => !knownPendingIds.current!.has(app.id));
+      knownPendingIds.current = ids;
+
+      if (arrivals.length === 0) return;
+
+      setUnseenPending((count) => count + arrivals.length);
+      setHighlightIds(arrivals.map((app) => app.id));
+      setListRefreshKey((key) => key + 1);
+
+      if (highlightClearTimer.current) clearTimeout(highlightClearTimer.current);
+      highlightClearTimer.current = setTimeout(() => setHighlightIds([]), 10_000);
+
+      const names = arrivals.map((app) => app.fullName).join(", ");
+      showToast(
+        arrivals.length === 1
+          ? `New pending application: ${names}`
+          : `${arrivals.length} new pending applications: ${names}`,
+        "info"
+      );
+      playPendingChime();
+    } catch {
+      // Keep last known count on transient network errors.
+    }
+  }, [router, showToast]);
+
+  useEffect(() => {
+    void pollPending();
+    const timer = setInterval(() => {
+      void pollPending();
+    }, PENDING_POLL_MS);
+    return () => {
+      clearInterval(timer);
+      if (highlightClearTimer.current) clearTimeout(highlightClearTimer.current);
+    };
+  }, [pollPending]);
+
+  useEffect(() => {
+    const base = "EBOA Admin";
+    document.title = pendingCount > 0 ? `(${pendingCount}) ${base}` : base;
+    return () => {
+      document.title = base;
+    };
+  }, [pendingCount]);
+
+  useEffect(() => {
+    if (section === "memberships") {
+      setUnseenPending(0);
+    }
+  }, [section]);
+
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
@@ -100,6 +188,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-off-white">
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       <header className="bg-charcoal text-white border-b border-white/10">
         <div className="container mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
           <div>
@@ -109,6 +198,24 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            {pendingCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setSection("memberships")}
+                className={`relative flex items-center gap-2 text-sm px-3 py-1.5 rounded-sm border transition-colors ${
+                  unseenPending > 0
+                    ? "border-gold bg-gold/20 text-gold animate-pulse"
+                    : "border-white/20 text-gray-200 hover:border-gold hover:text-gold"
+                }`}
+                aria-label={`${pendingCount} pending membership applications`}
+              >
+                <Bell className="w-4 h-4" />
+                <span className="hidden sm:inline">Pending</span>
+                <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-gold text-charcoal text-xs font-bold flex items-center justify-center">
+                  {pendingCount}
+                </span>
+              </button>
+            )}
             <Link href="/">
               <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
                 View Site
@@ -131,19 +238,35 @@ export default function AdminDashboard() {
             <button
               key={item}
               onClick={() => setSection(item)}
-              className={`px-4 py-2 text-sm rounded-sm capitalize transition-colors ${
+              className={`relative px-4 py-2 text-sm rounded-sm capitalize transition-colors ${
                 section === item
                   ? "bg-charcoal text-white font-semibold"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-gold"
               }`}
             >
               {item}
+              {item === "memberships" && pendingCount > 0 && (
+                <span
+                  className={`absolute -top-2 -right-2 min-w-[1.25rem] h-5 px-1 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                    unseenPending > 0
+                      ? "bg-gold text-charcoal animate-pulse"
+                      : "bg-charcoal text-white"
+                  }`}
+                >
+                  {pendingCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         {section === "memberships" ? (
-          <MembershipQueue />
+          <MembershipQueue
+            pendingCount={pendingCount}
+            highlightIds={highlightIds}
+            refreshKey={listRefreshKey}
+            onReviewPending={() => setUnseenPending(0)}
+          />
         ) : (
         <>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
