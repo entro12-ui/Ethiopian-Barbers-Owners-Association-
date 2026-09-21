@@ -26,6 +26,7 @@ export default function MembershipPage() {
   const [applicationId, setApplicationId] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [invoice, setInvoice] = useState<File | null>(null);
+  const [telegramBotLink, setTelegramBotLink] = useState<string | null>(null);
   const schema = useMemo(() => createMembershipFormSchema(t), [t]);
 
   const {
@@ -38,6 +39,7 @@ export default function MembershipPage() {
       applicantType: "barber",
       membershipLevel: "white",
       email: "",
+      telegramUsername: "",
     },
   });
 
@@ -61,6 +63,7 @@ export default function MembershipPage() {
       formData.append("address", data.address);
       formData.append("applicantType", data.applicantType);
       formData.append("membershipLevel", data.membershipLevel);
+      formData.append("telegramUsername", String(data.telegramUsername));
       photos.forEach((photo) => formData.append("photos", photo));
       formData.append("invoice", invoice);
 
@@ -76,6 +79,7 @@ export default function MembershipPage() {
       }
 
       setApplicationId(result.applicationId);
+      setTelegramBotLink(result.telegramBotLink || null);
       setIsSubmitted(true);
       showToast(t.membership.submitSuccess, "success");
     } catch (error) {
@@ -108,9 +112,15 @@ export default function MembershipPage() {
                 <p className="text-sm text-gray-500">{t.membership.reference}</p>
                 <p className="text-xl font-bold text-gold">{applicationId}</p>
               </div>
+              <p className="text-sm text-gray-600 mb-6">{t.membership.telegramStartHint}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                {telegramBotLink && (
+                  <a href={telegramBotLink} target="_blank" rel="noreferrer">
+                    <Button>{t.membership.telegramStartCta}</Button>
+                  </a>
+                )}
                 <Link href={`/membership/status?ref=${encodeURIComponent(applicationId)}`}>
-                  <Button>{t.membership.checkStatus}</Button>
+                  <Button variant={telegramBotLink ? "outline" : "primary"}>{t.membership.checkStatus}</Button>
                 </Link>
                 <Link href="/">
                   <Button variant="outline">{t.common.returnHome}</Button>
@@ -199,6 +209,25 @@ export default function MembershipPage() {
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-charcoal mb-1">
+                  {t.membership.telegramUsername}
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-500">@</span>
+                  <input
+                    {...register("telegramUsername")}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
+                    placeholder={t.membership.telegramUsernamePlaceholder}
+                    autoComplete="off"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">{t.membership.telegramNotice}</p>
+                {errors.telegramUsername && (
+                  <p className="text-red-500 text-xs mt-1">{String(errors.telegramUsername.message)}</p>
                 )}
               </div>
 

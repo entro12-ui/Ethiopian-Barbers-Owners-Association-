@@ -350,6 +350,18 @@ const en = {
     phone: "Phone Number *",
     email: "Email",
     optional: "(optional)",
+    telegramUsername: "Telegram username *",
+    telegramUsernamePlaceholder: "your_username",
+    telegramNotice:
+      "After approval, your official invoice is sent on Telegram. You must open our bot and press Start so we can deliver it.",
+    telegramStartCta: "Open Telegram bot and press Start",
+    telegramStartHint:
+      "Press Start in Telegram now so we can send your invoice when the application is approved.",
+    telegramPendingHint:
+      "Your official invoice will be sent on Telegram after approval. If you have not started the bot yet, use the Start link from your confirmation screen.",
+    telegramApprovedSent: "Your official invoice was also sent on Telegram.",
+    telegramApprovedNotLinked:
+      "Invoice downloads are ready below. To receive it on Telegram, open the bot Start link from your confirmation screen, then ask an administrator to resend.",
     barbershopName: "Barbershop Name *",
     barbershopNamePlaceholder: "Name of barbershop",
     address: "Address *",
@@ -394,7 +406,7 @@ const en = {
     submitting: "Submitting Application...",
     successTitle: "Application Submitted Successfully",
     successBody:
-      "Thank you for applying. Keep your reference number. After an administrator reviews your payment, you can download your membership ID card and official invoice.",
+      "Thank you for applying. Keep your reference number. After an administrator reviews your payment, your membership ID card and official invoice will be ready. The invoice is also sent on Telegram once you have started our bot.",
     reference: "Application Reference",
     submitSuccess: "Application submitted successfully!",
     submitError: "Failed to submit application",
@@ -402,6 +414,7 @@ const en = {
       fullName: "Full name is required",
       phone: "Please enter a valid phone number",
       email: "Please enter a valid email address",
+      telegramUsername: "Enter a valid Telegram username (3–32 letters, numbers, or _)",
       barbershopName: "Barbershop name is required",
       address: "Address is required",
       applicantType: "Please select Barber or Barbershop Owner",

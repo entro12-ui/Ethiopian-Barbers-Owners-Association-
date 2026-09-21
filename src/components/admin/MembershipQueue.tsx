@@ -7,7 +7,7 @@ import {
   PHOTO_DOCUMENT_TYPES,
   STAMPED_INVOICE_TYPE,
 } from "@/lib/membership";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, Send, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type ApplicationStatus = "pending" | "under_review" | "approved" | "rejected";
@@ -27,6 +27,9 @@ interface MembershipApplication {
   submittedAt: string;
   reviewedAt: string | null;
   reviewNotes: string | null;
+  telegramUsername: string | null;
+  telegramChatId: string | null;
+  telegramInvoiceSentAt: string | null;
   documents?: Array<{
     documentType: string;
     fileName: string;
@@ -57,7 +60,9 @@ export default function MembershipQueue() {
   const [detail, setDetail] = useState<MembershipApplication | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingTelegram, setIsSendingTelegram] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   const loadApplications = useCallback(async () => {
     try {
@@ -97,6 +102,7 @@ export default function MembershipQueue() {
   const openDetail = async (id: string) => {
     setSelectedId(id);
     setError("");
+    setInfo("");
     const response = await fetch(`/api/admin/memberships/${id}`, { cache: "no-store" });
     const data = await response.json();
     setDetail(data.application || null);
@@ -107,6 +113,7 @@ export default function MembershipQueue() {
     if (!selectedId) return;
     setIsSaving(true);
     setError("");
+    setInfo("");
     try {
       const response = await fetch(`/api/admin/memberships/${selectedId}`, {
         method: "PATCH",
@@ -118,11 +125,39 @@ export default function MembershipQueue() {
         throw new Error(data.error || "Unable to update application");
       }
       setDetail(data.application);
+      if (status === "approved" && data.application?.telegramInvoiceSentAt) {
+        setInfo("Approved and official invoice sent on Telegram.");
+      } else if (status === "approved" && !data.application?.telegramChatId) {
+        setInfo("Approved. Member has not started the bot yet — ask them to Start, then resend.");
+      }
       await loadApplications();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to update application");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const sendTelegramInvoice = async () => {
+    if (!selectedId) return;
+    setIsSendingTelegram(true);
+    setError("");
+    setInfo("");
+    try {
+      const response = await fetch(`/api/admin/memberships/${selectedId}/send-telegram`, {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to send Telegram invoice");
+      }
+      setDetail(data.application);
+      setInfo("Official invoice sent on Telegram.");
+      await loadApplications();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to send Telegram invoice");
+    } finally {
+      setIsSendingTelegram(false);
     }
   };
 
@@ -228,6 +263,24 @@ export default function MembershipQueue() {
                 <dd className="text-charcoal">{detail.email || "—"}</dd>
               </div>
               <div>
+                <dt className="text-gray-500">Telegram</dt>
+                <dd className="text-charcoal">
+                  {detail.telegramUsername ? `@${detail.telegramUsername}` : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-gray-500">Bot linked</dt>
+                <dd className="text-charcoal">{detail.telegramChatId ? "Yes" : "No"}</dd>
+              </div>
+              <div>
+                <dt className="text-gray-500">Invoice sent</dt>
+                <dd className="text-charcoal">
+                  {detail.telegramInvoiceSentAt
+                    ? new Date(detail.telegramInvoiceSentAt).toLocaleString()
+                    : "Not yet"}
+                </dd>
+              </div>
+              <div>
                 <dt className="text-gray-500">Type</dt>
                 <dd className="text-charcoal capitalize">{detail.applicantType}</dd>
               </div>
@@ -313,7 +366,7 @@ export default function MembershipQueue() {
                     rel="noreferrer"
                     className="text-sm text-gold hover:underline"
                   >
-                    View stamped invoice
+                    View official invoice
                   </a>
                 )}
               </div>
@@ -330,6 +383,7 @@ export default function MembershipQueue() {
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
+            {info && <p className="text-sm text-green-700">{info}</p>}
 
             {detail.status !== "approved" && (
               <div className="flex flex-wrap gap-2">
@@ -347,6 +401,22 @@ export default function MembershipQueue() {
                   Reject
                 </Button>
               </div>
+            )}
+
+            {detail.status === "approved" && stamped && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={sendTelegramInvoice}
+                disabled={isSendingTelegram}
+              >
+                {isSendingTelegram ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 mr-1" />
+                )}
+                Send invoice via Telegram
+              </Button>
             )}
           </div>
         )}

@@ -5,12 +5,18 @@ import {
   approveMembershipApplication,
   getApplicationDocument,
   getMembershipApplicationById,
+  markTelegramInvoiceSent,
   peekNextMembershipId,
   rejectMembershipApplication,
 } from "@/lib/membership-db";
-import { PAYMENT_INVOICE_TYPE, PHOTO_DOCUMENT_TYPES } from "@/lib/membership";
+import { PHOTO_DOCUMENT_TYPES, STAMPED_INVOICE_TYPE } from "@/lib/membership";
 import { generateOfficialDocuments } from "@/lib/membership-documents";
 import { notifyMemberApproved } from "@/lib/membership-email";
+import {
+  approvalInvoiceCaption,
+  sendInvoiceViaTelegram,
+  telegramConfigured,
+} from "@/lib/membership-telegram";
 
 export const dynamic = "force-dynamic";
 
@@ -64,11 +70,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ application });
     }
 
-    const invoice = await getApplicationDocument(id, PAYMENT_INVOICE_TYPE);
-    if (!invoice) {
-      return NextResponse.json({ error: "Payment invoice is missing" }, { status: 400 });
-    }
-
     const photoType = PHOTO_DOCUMENT_TYPES.find((type) =>
       current.documents.some((doc) => doc.documentType === type)
     );
@@ -84,7 +85,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       generated = await generateOfficialDocuments({
         application: { ...current, membershipId },
         membershipId,
-        invoice: { mimeType: invoice.mimeType, fileData: invoice.fileData },
         photo: photoInput,
       });
       try {
@@ -105,8 +105,23 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
 
-    const stamped = generated.find((doc) => doc.documentType === "stamped_invoice");
+    const stamped = generated.find((doc) => doc.documentType === STAMPED_INVOICE_TYPE);
     const idCard = generated.find((doc) => doc.documentType === "membership_id_card");
+
+    if (telegramConfigured() && application.telegramChatId && stamped) {
+      try {
+        await sendInvoiceViaTelegram({
+          chatId: application.telegramChatId,
+          fileName: stamped.fileName,
+          pdf: stamped.fileData,
+          caption: approvalInvoiceCaption(application),
+        });
+        application = (await markTelegramInvoiceSent(id)) || application;
+      } catch (error) {
+        console.error("Telegram auto-send on approval failed:", error);
+      }
+    }
+
     if (application.email && stamped && idCard) {
       await notifyMemberApproved(application, [
         { filename: idCard.fileName, content: idCard.fileData },

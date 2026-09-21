@@ -14,6 +14,7 @@ export interface MembershipApplicationInput {
   address: string;
   applicantType: ApplicantType;
   membershipLevel: MembershipLevel;
+  telegramUsername: string;
 }
 
 type Queryable = {
@@ -70,6 +71,9 @@ export interface MembershipApplicationRecord {
   updatedAt: string;
   reviewedAt: string | null;
   reviewNotes: string | null;
+  telegramUsername: string | null;
+  telegramChatId: string | null;
+  telegramInvoiceSentAt: string | null;
   documents: Array<{
     id: string;
     documentType: string;
@@ -78,13 +82,25 @@ export interface MembershipApplicationRecord {
   }>;
 }
 
+const APP_COLUMNS = `id, application_ref, membership_id, full_name, phone, email, address,
+  barbershop_name, status, applicant_type, membership_level,
+  submitted_at, updated_at, reviewed_at, review_notes,
+  telegram_username, telegram_chat_id, telegram_invoice_sent_at`;
+
+export function normalizeTelegramUsername(value: string): string {
+  return value.trim().replace(/^@+/, "").toLowerCase();
+}
+
 export function generateApplicationRef(): string {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `EBOA-${timestamp}-${random}`;
 }
 
-function mapApplication(row: Record<string, unknown>, documents: MembershipApplicationRecord["documents"] = []): MembershipApplicationRecord {
+function mapApplication(
+  row: Record<string, unknown>,
+  documents: MembershipApplicationRecord["documents"] = []
+): MembershipApplicationRecord {
   return {
     id: row.id as string,
     applicationRef: row.application_ref as string,
@@ -101,6 +117,9 @@ function mapApplication(row: Record<string, unknown>, documents: MembershipAppli
     updatedAt: row.updated_at as string,
     reviewedAt: (row.reviewed_at as string) || null,
     reviewNotes: (row.review_notes as string) || null,
+    telegramUsername: (row.telegram_username as string) || null,
+    telegramChatId: (row.telegram_chat_id as string) || null,
+    telegramInvoiceSentAt: (row.telegram_invoice_sent_at as string) || null,
     documents,
   };
 }
@@ -112,14 +131,15 @@ export async function createMembershipApplication(
   const id = randomUUID();
   const applicationRef = generateApplicationRef();
   const profession = data.applicantType === "owner" ? "Barbershop Owner" : "Barber";
+  const telegramUsername = normalizeTelegramUsername(data.telegramUsername);
 
   return withTransaction(async (client: PoolClient) => {
     const appResult = await client.query(
       `INSERT INTO membership_applications (
         id, application_ref, full_name, date_of_birth, phone, email, address, city,
         profession, barbershop_name, years_of_experience, barbershop_address,
-        applicant_type, membership_level, agreement
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+        applicant_type, membership_level, agreement, telegram_username
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING id, application_ref, status, submitted_at`,
       [
         id,
@@ -137,6 +157,7 @@ export async function createMembershipApplication(
         data.applicantType,
         data.membershipLevel,
         true,
+        telegramUsername,
       ]
     );
 
@@ -186,29 +207,14 @@ async function loadDocuments(db: Queryable, applicationId: string) {
 export async function getMembershipApplicationByRef(ref: string) {
   const { getPool } = await import("@/lib/db");
   const result = await getPool().query(
-    `SELECT
-      a.id,
-      a.application_ref,
-      a.membership_id,
-      a.full_name,
-      a.phone,
-      a.email,
-      a.address,
-      a.barbershop_name,
-      a.status,
-      a.applicant_type,
-      a.membership_level,
-      a.submitted_at,
-      a.updated_at,
-      a.reviewed_at,
-      a.review_notes
-    FROM membership_applications a
-    WHERE a.application_ref = $1`,
+    `SELECT ${APP_COLUMNS}
+     FROM membership_applications a
+     WHERE a.application_ref = $1`,
     [ref]
   );
 
   if (!result.rows[0]) return null;
-  const documents = await loadDocuments(getPool(), result.rows[0].id);
+  const documents = await loadDocuments(getPool(), result.rows[0].id as string);
   return mapApplication(result.rows[0], documents);
 }
 
@@ -216,18 +222,14 @@ export async function listMembershipApplications(status?: ApplicationStatus) {
   const { getPool } = await import("@/lib/db");
   const result = status
     ? await getPool().query(
-        `SELECT id, application_ref, membership_id, full_name, phone, email, address,
-                barbershop_name, status, applicant_type, membership_level,
-                submitted_at, updated_at, reviewed_at, review_notes
+        `SELECT ${APP_COLUMNS}
          FROM membership_applications
          WHERE status = $1
          ORDER BY submitted_at DESC`,
         [status]
       )
     : await getPool().query(
-        `SELECT id, application_ref, membership_id, full_name, phone, email, address,
-                barbershop_name, status, applicant_type, membership_level,
-                submitted_at, updated_at, reviewed_at, review_notes
+        `SELECT ${APP_COLUMNS}
          FROM membership_applications
          ORDER BY submitted_at DESC`
       );
@@ -238,9 +240,7 @@ export async function listMembershipApplications(status?: ApplicationStatus) {
 export async function getMembershipApplicationById(id: string) {
   const { getPool } = await import("@/lib/db");
   const result = await getPool().query(
-    `SELECT id, application_ref, membership_id, full_name, phone, email, address,
-            barbershop_name, status, applicant_type, membership_level,
-            submitted_at, updated_at, reviewed_at, review_notes
+    `SELECT ${APP_COLUMNS}
      FROM membership_applications
      WHERE id = $1`,
     [id]
@@ -313,9 +313,7 @@ export async function rejectMembershipApplication(id: string, reviewNotes?: stri
          reviewed_at = NOW(),
          updated_at = NOW()
      WHERE id = $1
-     RETURNING id, application_ref, membership_id, full_name, phone, email, address,
-               barbershop_name, status, applicant_type, membership_level,
-               submitted_at, updated_at, reviewed_at, review_notes`,
+     RETURNING ${APP_COLUMNS}`,
     [id, reviewNotes || null]
   );
   if (!result.rows[0]) return null;
@@ -347,9 +345,7 @@ export async function approveMembershipApplication(
            reviewed_at = NOW(),
            updated_at = NOW()
        WHERE id = $1
-       RETURNING id, application_ref, membership_id, full_name, phone, email, address,
-                 barbershop_name, status, applicant_type, membership_level,
-                 submitted_at, updated_at, reviewed_at, review_notes`,
+       RETURNING ${APP_COLUMNS}`,
       [id, assignedId, reviewNotes || null]
     );
 
@@ -380,6 +376,35 @@ export async function approveMembershipApplication(
     const documents = await loadDocuments(client, id);
     return mapApplication(updated.rows[0], documents);
   });
+}
+
+export async function bindTelegramChatToApplication(applicationRef: string, chatId: string) {
+  const { getPool } = await import("@/lib/db");
+  const result = await getPool().query(
+    `UPDATE membership_applications
+     SET telegram_chat_id = $2,
+         updated_at = NOW()
+     WHERE application_ref = $1
+     RETURNING ${APP_COLUMNS}`,
+    [applicationRef, String(chatId)]
+  );
+  if (!result.rows[0]) return null;
+  return mapApplication(result.rows[0]);
+}
+
+export async function markTelegramInvoiceSent(id: string) {
+  const { getPool } = await import("@/lib/db");
+  const result = await getPool().query(
+    `UPDATE membership_applications
+     SET telegram_invoice_sent_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING ${APP_COLUMNS}`,
+    [id]
+  );
+  if (!result.rows[0]) return null;
+  const documents = await loadDocuments(getPool(), id);
+  return mapApplication(result.rows[0], documents);
 }
 
 export async function peekNextMembershipId() {

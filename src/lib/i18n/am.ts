@@ -351,6 +351,18 @@ const am: Translations = {
     phone: "ስልክ ቁጥር *",
     email: "ኢሜይል",
     optional: "(አማራጭ)",
+    telegramUsername: "የቴሌግራም የተጠቃሚ ስም *",
+    telegramUsernamePlaceholder: "your_username",
+    telegramNotice:
+      "ከጸደቀ በኋላ ይፋዊ ደረሰኝዎ በቴሌግራም ይላካል። ለማድረስ ቦታችንን መክፈትና Start መጫን አለብዎት።",
+    telegramStartCta: "ቴሌግራም ቦትን ይክፈቱ እና Start ይጫኑ",
+    telegramStartHint:
+      "ማመልከቻው ሲጸድቅ ደረሰኝዎን ለመላክ አሁን በቴሌግራም Start ይጫኑ።",
+    telegramPendingHint:
+      "ከጸደቀ በኋላ ይፋዊ ደረሰኝዎ በቴሌግራም ይላካል። ቦቱን ገና ካልጀመሩ ከማረጋገጫ ገጹ Start አገናኝ ይጠቀሙ።",
+    telegramApprovedSent: "ይፋዊ ደረሰኝዎ በቴሌግራምም ተልኳል።",
+    telegramApprovedNotLinked:
+      "ደረሰኝ ማውረድ ከታች ዝግጁ ነው። በቴሌግራም ለመቀበል ከማረጋገጫ ገጹ Start አገናኝ ይክፈቱ፣ ከዚያ አስተዳዳሪ እንደገና እንዲልክ ይጠይቁ።",
     barbershopName: "የፀጉር ቤት ስም *",
     barbershopNamePlaceholder: "የፀጉር ቤቱ ስም",
     address: "አድራሻ *",
@@ -395,7 +407,7 @@ const am: Translations = {
     submitting: "ማመልከቻ እየገባ ነው...",
     successTitle: "ማመልከቻ በተሳካ ሁኔታ ገብቷል",
     successBody:
-      "ስላመለከቱ እናመሰግናለን። ማጣቀሻ ቁጥርዎን ያስቀምጡ። አስተዳዳሪ ክፍያዎን ከገመገመ በኋላ የአባልነት መታወቂያ ካርድዎን እና ይፋዊ ደረሰኝዎን ማውረድ ይችላሉ።",
+      "ስላመለከቱ እናመሰግናለን። ማጣቀሻ ቁጥርዎን ያስቀምጡ። አስተዳዳሪ ክፍያዎን ከገመገመ በኋላ የአባልነት መታወቂያ ካርድዎ እና ይፋዊ ደረሰኝዎ ዝግጁ ይሆናሉ። ቦታችንን ከጀመሩ ደረሰኝዎ በቴሌግራምም ይላካል።",
     reference: "የማመልከቻ ማጣቀሻ",
     submitSuccess: "ማመልከቻ በተሳካ ሁኔታ ገብቷል!",
     submitError: "ማመልከቻውን ማስገባት አልተሳካም",
@@ -403,6 +415,7 @@ const am: Translations = {
       fullName: "ሙሉ ስም ያስፈልጋል",
       phone: "እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ",
       email: "እባክዎ ትክክለኛ ኢሜይል አድራሻ ያስገቡ",
+      telegramUsername: "ትክክለኛ የቴሌግራም የተጠቃሚ ስም ያስገቡ (3–32 ፊደላት፣ ቁጥሮች ወይም _)",
       barbershopName: "የፀጉር ቤት ስም ያስፈልጋል",
       address: "አድራሻ ያስፈልጋል",
       applicantType: "እባክዎ ባርበር ወይም የፀጉር ቤት ባለቤት ይምረጡ",

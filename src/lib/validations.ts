@@ -25,6 +25,16 @@ export function createMembershipFormSchema(t: Translations) {
       .email(t.membership.errors.email)
       .optional()
       .or(z.literal("")),
+    telegramUsername: z
+      .string()
+      .trim()
+      .transform((value) => value.replace(/^@+/, ""))
+      .pipe(
+        z
+          .string()
+          .min(3, t.membership.errors.telegramUsername)
+          .regex(/^[a-zA-Z0-9_]{3,32}$/, t.membership.errors.telegramUsername)
+      ),
     barbershopName: z.string().min(2, t.membership.errors.barbershopName),
     address: z.string().min(5, t.membership.errors.address),
     applicantType: z.enum(["owner", "barber"], {

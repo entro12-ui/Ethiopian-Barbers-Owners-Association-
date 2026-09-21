@@ -16,6 +16,9 @@ interface StatusResult {
   status: "pending" | "under_review" | "approved" | "rejected";
   membershipId: string | null;
   reviewNotes: string | null;
+  telegramLinked: boolean;
+  telegramInvoiceSent: boolean;
+  telegramBotLink: string | null;
   documents: {
     idCard: boolean;
     invoice: boolean;
@@ -118,6 +121,9 @@ function MembershipStatusForm() {
                   <p className="text-sm text-gray-500">{t.membership.reference}</p>
                   <p className="font-semibold text-charcoal">{result.applicationRef}</p>
                   <p className="mt-3 text-gray-700">{statusMessage}</p>
+                  {(result.status === "pending" || result.status === "under_review") && (
+                    <p className="mt-2 text-sm text-gray-600">{t.membership.telegramPendingHint}</p>
+                  )}
                   {result.status === "rejected" && result.reviewNotes && (
                     <p className="mt-2 text-sm text-gray-600">{result.reviewNotes}</p>
                   )}
@@ -125,6 +131,25 @@ function MembershipStatusForm() {
                     <p className="mt-3">
                       <span className="text-sm text-gray-500">{t.membership.membershipIdLabel}: </span>
                       <span className="font-bold text-gold">{result.membershipId}</span>
+                    </p>
+                  )}
+                  {result.status === "approved" && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      {result.telegramInvoiceSent
+                        ? t.membership.telegramApprovedSent
+                        : t.membership.telegramApprovedNotLinked}
+                    </p>
+                  )}
+                  {result.telegramBotLink && !result.telegramLinked && (
+                    <p className="mt-3">
+                      <a
+                        href={result.telegramBotLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-gold hover:underline"
+                      >
+                        {t.membership.telegramStartCta}
+                      </a>
                     </p>
                   )}
                 </div>

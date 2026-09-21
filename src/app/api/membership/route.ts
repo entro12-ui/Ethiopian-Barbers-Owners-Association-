@@ -15,6 +15,7 @@ import {
   DocumentInput,
 } from "@/lib/membership-db";
 import { notifyAdminNewMembership } from "@/lib/membership-email";
+import { telegramBotDeepLink } from "@/lib/membership-telegram";
 import { membershipFormSchema } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
       fullName: formData.get("fullName") as string,
       phone: formData.get("phone") as string,
       email: (formData.get("email") as string) || "",
+      telegramUsername: (formData.get("telegramUsername") as string) || "",
       barbershopName: formData.get("barbershopName") as string,
       address: formData.get("address") as string,
       applicantType: formData.get("applicantType") as "owner" | "barber",
@@ -113,6 +115,7 @@ export async function POST(request: NextRequest) {
         address: parsed.address,
         applicantType: parsed.applicantType,
         membershipLevel: parsed.membershipLevel,
+        telegramUsername: String(parsed.telegramUsername),
       },
       documents
     );
@@ -129,6 +132,7 @@ export async function POST(request: NextRequest) {
         applicationId: application.applicationRef,
         status: application.status,
         submittedAt: application.submittedAt,
+        telegramBotLink: telegramBotDeepLink(application.applicationRef),
       },
       { status: 201 }
     );
@@ -166,6 +170,10 @@ export async function GET(request: NextRequest) {
       updatedAt: application.updatedAt,
       reviewedAt: application.reviewedAt,
       reviewNotes: application.status === "rejected" ? application.reviewNotes : null,
+      telegramUsername: application.telegramUsername,
+      telegramLinked: Boolean(application.telegramChatId),
+      telegramInvoiceSent: Boolean(application.telegramInvoiceSentAt),
+      telegramBotLink: telegramBotDeepLink(application.applicationRef),
       documents: {
         idCard: application.documents.some((doc) => doc.documentType === MEMBERSHIP_ID_CARD_TYPE),
         invoice: application.documents.some((doc) => doc.documentType === STAMPED_INVOICE_TYPE),

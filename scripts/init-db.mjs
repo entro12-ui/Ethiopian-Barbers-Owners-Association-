@@ -113,6 +113,9 @@ async function main() {
         applicant_type TEXT NOT NULL CHECK (applicant_type IN ('owner', 'barber')),
         membership_level TEXT NOT NULL DEFAULT 'white' CHECK (membership_level IN ('gold', 'silver', 'white')),
         membership_id TEXT,
+        telegram_username TEXT,
+        telegram_chat_id TEXT,
+        telegram_invoice_sent_at TIMESTAMPTZ,
         status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'under_review', 'approved', 'rejected')),
         agreement BOOLEAN NOT NULL DEFAULT true,
         submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -200,6 +203,12 @@ async function main() {
         ADD COLUMN IF NOT EXISTS membership_level TEXT NOT NULL DEFAULT 'white';
       ALTER TABLE membership_applications
         ADD COLUMN IF NOT EXISTS membership_id TEXT;
+      ALTER TABLE membership_applications
+        ADD COLUMN IF NOT EXISTS telegram_username TEXT;
+      ALTER TABLE membership_applications
+        ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
+      ALTER TABLE membership_applications
+        ADD COLUMN IF NOT EXISTS telegram_invoice_sent_at TIMESTAMPTZ;
     `).catch(() => {});
 
     await client.query(`

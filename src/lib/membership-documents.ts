@@ -18,6 +18,7 @@ import type { DocumentInput, MembershipApplicationRecord } from "@/lib/membershi
 const GOLD = rgb(0.773, 0.647, 0.353);
 const CHARCOAL = rgb(0.102, 0.102, 0.102);
 const WHITE = rgb(1, 1, 1);
+const INVOICE_TEMPLATE_PATH = "public/Generated invoice for members footer&header.pdf";
 
 async function readPublicFile(relativePath: string) {
   try {
@@ -31,37 +32,6 @@ async function embedImage(pdf: PDFDocument, bytes: Buffer, mimeType: string) {
   if (mimeType === "image/png") return pdf.embedPng(bytes);
   if (mimeType === "image/jpeg" || mimeType === "image/jpg") return pdf.embedJpg(bytes);
   return null;
-}
-
-function drawCenteredText(
-  page: PDFPage,
-  text: string,
-  x: number,
-  y: number,
-  size: number,
-  font: Awaited<ReturnType<PDFDocument["embedFont"]>>,
-  color: RGB
-) {
-  const width = font.widthOfTextAtSize(text, size);
-  page.drawText(text, { x: x - width / 2, y, size, font, color });
-}
-
-function drawStamp(
-  page: PDFPage,
-  cx: number,
-  cy: number,
-  membershipId: string,
-  approvedOn: string,
-  font: Awaited<ReturnType<PDFDocument["embedFont"]>>,
-  bold: Awaited<ReturnType<PDFDocument["embedFont"]>>
-) {
-  const radius = 52;
-  page.drawCircle({ x: cx, y: cy, size: radius, borderColor: GOLD, borderWidth: 4, color: rgb(1, 1, 1), opacity: 0.12 });
-  page.drawCircle({ x: cx, y: cy, size: radius - 8, borderColor: GOLD, borderWidth: 1.5 });
-  drawCenteredText(page, SITE_SHORT_NAME, cx, cy + 16, 12, bold, GOLD);
-  drawCenteredText(page, "APPROVED", cx, cy + 1, 11, bold, GOLD);
-  drawCenteredText(page, membershipId, cx, cy - 14, 8, font, CHARCOAL);
-  drawCenteredText(page, approvedOn, cx, cy - 26, 7, font, CHARCOAL);
 }
 
 async function embedSignature(pdf: PDFDocument) {
@@ -94,16 +64,19 @@ function drawFallbackSignature(
   });
 }
 
+function safeText(value: string, max = 80) {
+  return value.replace(/[^\x20-\x7E]/g, "?").slice(0, max);
+}
+
 export async function generateOfficialDocuments(params: {
   application: MembershipApplicationRecord;
   membershipId: string;
-  invoice: { mimeType: string; fileData: Buffer };
   photo?: { mimeType: string; fileData: Buffer } | null;
 }): Promise<DocumentInput[]> {
   const approvedOn = new Date().toISOString().slice(0, 10);
-  const [idCard, stampedInvoice] = await Promise.all([
+  const [idCard, officialInvoice] = await Promise.all([
     createMembershipIdCard(params, approvedOn),
-    createStampedInvoice(params, approvedOn),
+    createOfficialInvoiceFromTemplate(params, approvedOn),
   ]);
 
   return [
@@ -118,8 +91,8 @@ export async function generateOfficialDocuments(params: {
       documentType: STAMPED_INVOICE_TYPE,
       fileName: `${params.membershipId}-invoice.pdf`,
       mimeType: "application/pdf",
-      fileSize: stampedInvoice.length,
-      fileData: Buffer.from(stampedInvoice),
+      fileSize: officialInvoice.length,
+      fileData: Buffer.from(officialInvoice),
     },
   ];
 }
@@ -172,7 +145,7 @@ async function createMembershipIdCard(
   lines.forEach((line, index) => {
     const y = 220 - index * 24;
     page.drawText(line[0], { x: 168, y, size: 9, font, color: GOLD });
-    page.drawText(line[1], { x: 168, y: y - 12, size: 12, font: bold, color: WHITE });
+    page.drawText(safeText(line[1]), { x: 168, y: y - 12, size: 12, font: bold, color: WHITE });
   });
 
   const signature = await embedSignature(pdf);
@@ -187,93 +160,109 @@ async function createMembershipIdCard(
   return pdf.save();
 }
 
-async function createStampedInvoice(
+async function createOfficialInvoiceFromTemplate(
   params: {
     application: MembershipApplicationRecord;
     membershipId: string;
-    invoice: { mimeType: string; fileData: Buffer };
   },
   approvedOn: string
 ) {
-  const pdf = await PDFDocument.create();
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const script = await pdf.embedFont(StandardFonts.TimesRomanItalic);
-
-  if (params.invoice.mimeType === "application/pdf") {
-    try {
-      const source = await PDFDocument.load(params.invoice.fileData);
-      const pages = await pdf.copyPages(source, source.getPageIndices());
-      pages.forEach((copied) => pdf.addPage(copied));
-    } catch {
-      const page = pdf.addPage([595, 842]);
-      page.drawRectangle({ x: 0, y: 0, width: 595, height: 842, color: WHITE });
-      page.drawText("Original payment receipt is on file with EBOA.", {
-        x: 36,
-        y: 420,
-        size: 12,
-        font: bold,
-        color: CHARCOAL,
-      });
-    }
-  } else {
-    const page = pdf.addPage([595, 842]);
-    page.drawRectangle({ x: 0, y: 0, width: 595, height: 842, color: WHITE });
-    const image = await embedImage(pdf, params.invoice.fileData, params.invoice.mimeType);
-    if (image) {
-      const maxWidth = 520;
-      const maxHeight = 640;
-      const scale = Math.min(maxWidth / image.width, maxHeight / image.height);
-      const width = image.width * scale;
-      const height = image.height * scale;
-      page.drawImage(image, { x: (595 - width) / 2, y: 140, width, height });
-    } else {
-      page.drawText("Original payment receipt is on file with EBOA.", {
-        x: 36,
-        y: 420,
-        size: 12,
-        font: bold,
-        color: CHARCOAL,
-      });
-    }
-  }
+  const templateBytes = await readPublicFile(INVOICE_TEMPLATE_PATH);
+  const pdf = templateBytes
+    ? await PDFDocument.load(templateBytes)
+    : await PDFDocument.create();
 
   if (pdf.getPageCount() === 0) {
-    const page = pdf.addPage([595, 842]);
-    page.drawRectangle({ x: 0, y: 0, width: 595, height: 842, color: WHITE });
+    pdf.addPage([595, 842]);
   }
 
   const page = pdf.getPage(0);
-  const { width, height } = page.getSize();
-  drawStamp(page, width - 90, height - 90, params.membershipId, approvedOn, font, bold);
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const script = await pdf.embedFont(StandardFonts.TimesRomanItalic);
+  const fee = MEMBERSHIP_PAYMENT.fees[params.application.membershipLevel];
+  const memberType =
+    params.application.applicantType === "owner" ? "Barbershop Owner" : "Barber";
+  const telegram = params.application.telegramUsername
+    ? `@${params.application.telegramUsername}`
+    : "—";
 
-  page.drawText("Official payment confirmation", {
-    x: 36,
-    y: 64,
-    size: 10,
+  // Content area between template header/footer (A4 595x842).
+  const left = 56;
+  const labelColor: RGB = CHARCOAL;
+  const valueColor: RGB = rgb(0.15, 0.15, 0.15);
+
+  page.drawText("OFFICIAL MEMBERSHIP INVOICE", {
+    x: left,
+    y: 620,
+    size: 14,
     font: bold,
-    color: CHARCOAL,
+    color: labelColor,
   });
-  page.drawText(`${params.application.fullName}  ·  ${params.membershipId}`, {
-    x: 36,
-    y: 50,
+  page.drawText(SITE_NAME, {
+    x: left,
+    y: 602,
     size: 9,
     font,
-    color: CHARCOAL,
+    color: labelColor,
   });
+
+  const rows: Array<[string, string]> = [
+    ["Invoice / Membership ID", params.membershipId],
+    ["Issue date", approvedOn],
+    ["Member name", params.application.fullName],
+    ["Member type", memberType],
+    ["Membership level", params.application.membershipLevel.toUpperCase()],
+    ["Amount paid", fee],
+    ["Phone", params.application.phone],
+    ["Telegram", telegram],
+    ["Barbershop", params.application.barbershopName || "—"],
+    ["Address", params.application.address],
+    ["Application ref", params.application.applicationRef],
+  ];
+
+  rows.forEach((row, index) => {
+    const y = 560 - index * 28;
+    page.drawText(row[0], { x: left, y, size: 9, font, color: GOLD });
+    page.drawText(safeText(row[1], 70), {
+      x: left,
+      y: y - 12,
+      size: 11,
+      font: bold,
+      color: valueColor,
+    });
+  });
+
+  page.drawText(
+    "This document confirms membership payment approval by the Ethiopian Barbers & Owners Association.",
+    {
+      x: left,
+      y: 220,
+      size: 8,
+      font,
+      color: labelColor,
+    }
+  );
 
   const signature = await embedSignature(pdf);
   if (signature) {
-    page.drawImage(signature, { x: width - 180, y: 36, width: 130, height: 46 });
+    page.drawImage(signature, { x: 380, y: 150, width: 130, height: 46 });
   } else {
-    drawFallbackSignature(page, width - 180, 36, script);
+    drawFallbackSignature(page, 380, 150, script);
   }
   page.drawText(MEMBERSHIP_PAYMENT.officerTitle, {
-    x: width - 180,
-    y: 24,
+    x: 380,
+    y: 138,
     size: 8,
     font,
-    color: CHARCOAL,
+    color: labelColor,
+  });
+  page.drawText(MEMBERSHIP_PAYMENT.officerName, {
+    x: 380,
+    y: 126,
+    size: 8,
+    font: bold,
+    color: labelColor,
   });
 
   return pdf.save();
