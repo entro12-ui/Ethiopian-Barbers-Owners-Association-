@@ -1,8 +1,10 @@
 import { Pool, PoolClient } from "pg";
 import {
+  getDatabaseSchema,
   getDatabaseSsl,
   isPlaceholderDatabaseUrl,
-  normalizeDatabaseUrl,
+  parseDatabaseUrl,
+  quotePgIdent,
 } from "@/lib/db-config";
 
 let pool: Pool | null = null;
@@ -18,13 +20,14 @@ export function getPool(): Pool {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  const connectionString = normalizeDatabaseUrl(rawConnectionString);
+  const { connectionString, schema } = parseDatabaseUrl(rawConnectionString);
 
   if (!pool) {
     pool = new Pool({
       connectionString,
       ssl: getDatabaseSsl(connectionString),
       max: 10,
+      options: `-c search_path=${schema},public`,
     });
   }
 
@@ -49,8 +52,12 @@ export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>)
 export async function initializeDatabase(): Promise<void> {
   if (initialized || !isDatabaseConfigured()) return;
 
+  const schema = getDatabaseSchema(process.env.DATABASE_URL);
+  const schemaIdent = quotePgIdent(schema);
   const client = await getPool().connect();
   try {
+    await client.query(`CREATE SCHEMA IF NOT EXISTS ${schemaIdent}`);
+    await client.query(`SET search_path TO ${schemaIdent}, public`);
     await client.query(`
       CREATE TABLE IF NOT EXISTS membership_applications (
         id TEXT PRIMARY KEY,
