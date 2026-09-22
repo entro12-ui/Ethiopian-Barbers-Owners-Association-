@@ -6,10 +6,12 @@ import {
   getMembershipApplicationById,
   markTelegramInvoiceSent,
 } from "@/lib/membership-db";
-import { STAMPED_INVOICE_TYPE } from "@/lib/membership";
+import { MEMBERSHIP_ID_CARD_TYPE, STAMPED_INVOICE_TYPE } from "@/lib/membership";
 import {
+  approvalIdCardCaption,
   approvalInvoiceCaption,
-  sendInvoiceViaTelegram,
+  sendDocumentViaTelegram,
+  telegramBotDeepLink,
   telegramConfigured,
 } from "@/lib/membership-telegram";
 
@@ -40,34 +42,60 @@ export async function POST(_request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "Application is not approved yet" }, { status: 400 });
     }
     if (!application.telegramChatId) {
+      const startLink = telegramBotDeepLink(application.applicationRef);
       return NextResponse.json(
         {
           error:
-            "Member has not started the Telegram bot yet. Ask them to open the Start link from their confirmation page.",
+            "Member has not linked Telegram yet. Ask them to open the Start link (or press Start in the bot using the same Telegram username as on the application), then try again.",
+          telegramBotLink: startLink,
+          telegramUsername: application.telegramUsername,
         },
         { status: 400 }
       );
     }
 
     const invoice = await getApplicationDocument(id, STAMPED_INVOICE_TYPE);
-    if (!invoice) {
-      return NextResponse.json({ error: "Official invoice PDF is missing" }, { status: 400 });
+    const idCard = await getApplicationDocument(id, MEMBERSHIP_ID_CARD_TYPE);
+    if (!invoice && !idCard) {
+      return NextResponse.json(
+        { error: "Official invoice and ID card PDFs are missing" },
+        { status: 400 }
+      );
     }
 
-    await sendInvoiceViaTelegram({
-      chatId: application.telegramChatId,
-      fileName: invoice.fileName,
-      pdf: invoice.fileData,
-      caption: approvalInvoiceCaption(application),
-    });
+    const sent: string[] = [];
+
+    if (idCard) {
+      await sendDocumentViaTelegram({
+        chatId: application.telegramChatId,
+        fileName: idCard.fileName,
+        pdf: idCard.fileData,
+        caption: approvalIdCardCaption(application),
+      });
+      sent.push("id_card");
+    }
+
+    if (invoice) {
+      await sendDocumentViaTelegram({
+        chatId: application.telegramChatId,
+        fileName: invoice.fileName,
+        pdf: invoice.fileData,
+        caption: approvalInvoiceCaption(application),
+      });
+      sent.push("invoice");
+    }
 
     const updated = await markTelegramInvoiceSent(id);
-    return NextResponse.json({ application: updated || application, sent: true });
+    return NextResponse.json({
+      application: updated || application,
+      sent: true,
+      documents: sent,
+    });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error("Admin send Telegram invoice error:", error);
+    console.error("Admin send Telegram documents error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }

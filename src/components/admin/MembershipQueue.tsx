@@ -7,7 +7,8 @@ import {
   PHOTO_DOCUMENT_TYPES,
   STAMPED_INVOICE_TYPE,
 } from "@/lib/membership";
-import { Bell, Check, Loader2, Send, X } from "lucide-react";
+import { telegramInvoiceBotDeepLink } from "@/lib/constants";
+import { Bell, Check, Copy, Loader2, Send, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type ApplicationStatus = "pending" | "under_review" | "approved" | "rejected";
@@ -155,9 +156,13 @@ export default function MembershipQueue({
       }
       setDetail(data.application);
       if (status === "approved" && data.application?.telegramInvoiceSentAt) {
-        setInfo("Approved and official invoice sent on Telegram.");
+        setInfo("Approved. ID card and official invoice sent on Telegram.");
       } else if (status === "approved" && !data.application?.telegramChatId) {
-        setInfo("Approved. Member has not started the bot yet — ask them to Start, then resend.");
+        setInfo(
+          "Approved. Member has not linked Telegram yet — ask them to open Start (same username as on the form), then resend."
+        );
+      } else if (status === "approved") {
+        setInfo("Approved. Documents are ready — send via Telegram when the bot is linked.");
       }
       await loadApplications();
     } catch (err) {
@@ -178,13 +183,16 @@ export default function MembershipQueue({
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Unable to send Telegram invoice");
+        const linkHint = data.telegramBotLink
+          ? ` Start link: ${data.telegramBotLink}`
+          : "";
+        throw new Error((data.error || "Unable to send Telegram documents") + linkHint);
       }
       setDetail(data.application);
-      setInfo("Official invoice sent on Telegram.");
+      setInfo("ID card and official invoice sent on Telegram.");
       await loadApplications();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to send Telegram invoice");
+      setError(err instanceof Error ? err.message : "Unable to send Telegram documents");
     } finally {
       setIsSendingTelegram(false);
     }
@@ -376,7 +384,31 @@ export default function MembershipQueue({
               </div>
               <div>
                 <dt className="text-gray-500">Bot linked</dt>
-                <dd className="text-charcoal">{detail.telegramChatId ? "Yes" : "No"}</dd>
+                <dd className="text-charcoal">
+                  {detail.telegramChatId ? (
+                    "Yes"
+                  ) : (
+                    <span className="space-y-1 block">
+                      <span className="text-amber-700 font-medium">No</span>
+                      <button
+                        type="button"
+                        className="block text-xs text-gold hover:underline"
+                        onClick={async () => {
+                          const link = telegramInvoiceBotDeepLink(detail.applicationRef);
+                          try {
+                            await navigator.clipboard.writeText(link);
+                            setInfo("Start link copied — send it to the member so they can press Start.");
+                          } catch {
+                            setInfo(`Ask member to open: ${link}`);
+                          }
+                        }}
+                      >
+                        <Copy className="w-3 h-3 inline mr-1" />
+                        Copy Telegram Start link
+                      </button>
+                    </span>
+                  )}
+                </dd>
               </div>
               <div>
                 <dt className="text-gray-500">Invoice sent</dt>
@@ -518,24 +550,54 @@ export default function MembershipQueue({
               </p>
             )}
 
-            {detail.status === "approved" && stamped && (
+            {detail.status === "approved" && (stamped || idCard) && (
               <>
                 <p className="text-xs text-gray-500">
-                  Official invoice was generated from the EBOA header/footer template after approval.
+                  Official invoice and ID card were generated from the EBOA templates after approval.
+                  Sending via Telegram delivers both PDFs to the member.
                 </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={sendTelegramInvoice}
-                  disabled={isSendingTelegram}
-                >
-                  {isSendingTelegram ? (
-                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4 mr-1" />
-                  )}
-                  Send invoice via Telegram
-                </Button>
+                {!detail.telegramChatId && (
+                  <p className="text-sm text-amber-700">
+                    Bot not linked yet. Member must open the Start link (or press Start in the bot
+                    with the same Telegram username as on this application), then click refresh below.
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      if (!selectedId) return;
+                      const response = await fetch(`/api/admin/memberships/${selectedId}`, {
+                        cache: "no-store",
+                      });
+                      const data = await response.json();
+                      if (data.application) {
+                        setDetail(data.application);
+                        setInfo(
+                          data.application.telegramChatId
+                            ? "Bot is linked — you can send documents now."
+                            : "Still not linked. Ask the member to press Start again."
+                        );
+                      }
+                    }}
+                  >
+                    Refresh link status
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={sendTelegramInvoice}
+                    disabled={isSendingTelegram || !detail.telegramChatId}
+                  >
+                    {isSendingTelegram ? (
+                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4 mr-1" />
+                    )}
+                    Send ID card &amp; invoice via Telegram
+                  </Button>
+                </div>
               </>
             )}
           </div>

@@ -379,17 +379,82 @@ export async function approveMembershipApplication(
 }
 
 export async function bindTelegramChatToApplication(applicationRef: string, chatId: string) {
+  return linkTelegramChat({ chatId, startPayload: applicationRef });
+}
+
+/**
+ * Link a Telegram chat to a membership application.
+ * Tries start payload (application ref / membership id, hyphen or underscore),
+ * then falls back to matching the Telegram username collected on the form.
+ */
+export async function linkTelegramChat(params: {
+  chatId: string;
+  startPayload?: string;
+  telegramUsername?: string | null;
+}) {
   const { getPool } = await import("@/lib/db");
-  const result = await getPool().query(
-    `UPDATE membership_applications
-     SET telegram_chat_id = $2,
-         updated_at = NOW()
-     WHERE application_ref = $1
-     RETURNING ${APP_COLUMNS}`,
-    [applicationRef, String(chatId)]
-  );
-  if (!result.rows[0]) return null;
-  return mapApplication(result.rows[0]);
+  const pool = getPool();
+  const chatId = String(params.chatId);
+
+  const tryPayload = async (raw: string) => {
+    const payload = decodeStartPayload(raw);
+    if (!payload) return null;
+
+    const variants = Array.from(
+      new Set([payload, payload.replace(/_/g, "-"), payload.replace(/-/g, "_")])
+    );
+
+    for (const variant of variants) {
+      const result = await pool.query(
+        `UPDATE membership_applications
+         SET telegram_chat_id = $2,
+             updated_at = NOW()
+         WHERE lower(application_ref) = lower($1)
+            OR lower(coalesce(membership_id, '')) = lower($1)
+         RETURNING ${APP_COLUMNS}`,
+        [variant, chatId]
+      );
+      if (result.rows[0]) return mapApplication(result.rows[0]);
+    }
+    return null;
+  };
+
+  if (params.startPayload?.trim()) {
+    const linked = await tryPayload(params.startPayload);
+    if (linked) return linked;
+  }
+
+  if (params.telegramUsername?.trim()) {
+    const username = normalizeTelegramUsername(params.telegramUsername);
+    const result = await pool.query(
+      `UPDATE membership_applications
+       SET telegram_chat_id = $2,
+           updated_at = NOW()
+       WHERE id = (
+         SELECT id FROM membership_applications
+         WHERE lower(coalesce(telegram_username, '')) = lower($1)
+         ORDER BY
+           CASE WHEN telegram_chat_id IS NULL OR telegram_chat_id = $2 THEN 0 ELSE 1 END,
+           submitted_at DESC
+         LIMIT 1
+       )
+       RETURNING ${APP_COLUMNS}`,
+      [username, chatId]
+    );
+    if (result.rows[0]) return mapApplication(result.rows[0]);
+  }
+
+  return null;
+}
+
+function decodeStartPayload(raw: string) {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  try {
+    return decodeURIComponent(trimmed).trim();
+  } catch {
+    return trimmed;
+  }
 }
 
 export async function markTelegramInvoiceSent(id: string) {

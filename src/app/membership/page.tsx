@@ -13,10 +13,15 @@ import { interpolate } from "@/lib/i18n";
 import { ALLOWED_INVOICE_TYPES, MAX_FILE_SIZE } from "@/lib/membership";
 import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2, ArrowLeft, Upload } from "lucide-react";
+import { CheckCircle, Loader2, ArrowLeft, Upload, Copy, Check, X } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+
+type MembershipLevel = "gold" | "silver" | "white";
+type PayMethod = "bank" | "telebirr";
+
+const LEVEL_ORDER: MembershipLevel[] = ["gold", "silver", "white"];
 
 export default function MembershipPage() {
   const { locale, t } = useI18n();
@@ -26,12 +31,17 @@ export default function MembershipPage() {
   const [applicationId, setApplicationId] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [invoice, setInvoice] = useState<File | null>(null);
+  const [invoicePreview, setInvoicePreview] = useState<string | null>(null);
   const [telegramBotLink, setTelegramBotLink] = useState<string | null>(null);
+  const [payMethod, setPayMethod] = useState<PayMethod>("bank");
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const schema = useMemo(() => createMembershipFormSchema(t), [t]);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<MembershipFormData>({
     resolver: zodResolver(schema),
@@ -43,6 +53,35 @@ export default function MembershipPage() {
     },
   });
 
+  const selectedLevel = watch("membershipLevel") as MembershipLevel;
+  const amountDue = MEMBERSHIP_PAYMENT.fees[selectedLevel];
+
+  useEffect(() => {
+    if (!invoice || !invoice.type.startsWith("image/")) {
+      setInvoicePreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(invoice);
+    setInvoicePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [invoice]);
+
+  const copyValue = async (label: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(label);
+      showToast(t.membership.copied, "success");
+      window.setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      showToast(t.membership.submitError, "error");
+    }
+  };
+
+  const levelLabel = (level: MembershipLevel) => {
+    if (level === "gold") return t.membership.gold;
+    if (level === "silver") return t.membership.silver;
+    return t.membership.white;
+  };
   const onSubmit = async (data: MembershipFormData) => {
     if (!invoice) {
       showToast(t.membership.invoiceRequired, "error");
@@ -281,18 +320,40 @@ export default function MembershipPage() {
               </div>
 
               <div>
-                <label htmlFor="membershipLevel" className="block text-sm font-medium text-charcoal mb-1">
+                <label className="block text-sm font-medium text-charcoal mb-2">
                   {t.membership.membershipLevel}
                 </label>
-                <select
-                  id="membershipLevel"
-                  {...register("membershipLevel")}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold bg-white"
-                >
-                  <option value="gold">{t.membership.gold}</option>
-                  <option value="silver">{t.membership.silver}</option>
-                  <option value="white">{t.membership.white}</option>
-                </select>
+                <p className="text-xs text-gray-500 mb-3">{t.membership.feeSelectHint}</p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {LEVEL_ORDER.map((level) => {
+                    const selected = selectedLevel === level;
+                    return (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() =>
+                          setValue("membershipLevel", level, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
+                        }
+                        className={`text-left rounded-sm border px-4 py-3 transition-all ${
+                          selected
+                            ? "border-gold bg-gold/10 ring-2 ring-gold/40 shadow-sm"
+                            : "border-gray-200 bg-white hover:border-gold/60"
+                        }`}
+                      >
+                        <span className="block text-sm font-semibold text-charcoal">
+                          {levelLabel(level)}
+                        </span>
+                        <span className="block mt-1 text-lg font-bold text-gold">
+                          {MEMBERSHIP_PAYMENT.fees[level]}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <input type="hidden" {...register("membershipLevel")} />
                 {errors.membershipLevel && (
                   <p className="text-red-500 text-xs mt-1">{errors.membershipLevel.message}</p>
                 )}
@@ -322,54 +383,154 @@ export default function MembershipPage() {
               </div>
             </section>
 
-            <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-4">
+            <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-5">
               <div>
                 <h2 className="text-xl font-bold text-charcoal mb-2">{t.membership.paymentTitle}</h2>
                 <p className="text-sm text-gray-600 leading-relaxed">{t.membership.paymentIntro}</p>
               </div>
-              <div className="bg-off-white p-4 rounded-sm space-y-2 text-sm">
-                <p>
-                  <span className="text-gray-500">{t.membership.bankName}:</span>{" "}
-                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.bankName}</span>
-                </p>
-                <p>
-                  <span className="text-gray-500">{t.membership.accountName}:</span>{" "}
-                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountName}</span>
-                </p>
-                <p>
-                  <span className="text-gray-500">{t.membership.accountNumber}:</span>{" "}
-                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountNumber}</span>
-                </p>
-                <p>
-                  <span className="text-gray-500">{t.membership.telebirr}:</span>{" "}
-                  <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.telebirr}</span>
-                </p>
-                <div className="pt-2 space-y-1 text-gold font-semibold">
-                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.gold, fee: MEMBERSHIP_PAYMENT.fees.gold })}</p>
-                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.silver, fee: MEMBERSHIP_PAYMENT.fees.silver })}</p>
-                  <p>{interpolate(t.membership.feeLabel, { level: t.membership.white, fee: MEMBERSHIP_PAYMENT.fees.white })}</p>
+
+              <div className="rounded-sm border border-gold/30 bg-gold/10 px-4 py-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-600 font-semibold">
+                    {t.membership.amountDue}
+                  </p>
+                  <p className="text-sm text-charcoal mt-1">{levelLabel(selectedLevel)}</p>
+                </div>
+                <p className="text-3xl font-bold text-gold tabular-nums">{amountDue}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-charcoal mb-2">{t.membership.paymentMethod}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      { id: "bank" as const, label: t.membership.payByBank },
+                      { id: "telebirr" as const, label: t.membership.payByTelebirr },
+                    ] as const
+                  ).map((method) => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setPayMethod(method.id)}
+                      className={`px-3 py-2.5 text-sm rounded-sm border transition-colors ${
+                        payMethod === method.id
+                          ? "bg-charcoal text-white border-charcoal font-semibold"
+                          : "bg-white text-gray-600 border-gray-200 hover:border-gold"
+                      }`}
+                    >
+                      {method.label}
+                    </button>
+                  ))}
                 </div>
               </div>
+
+              <div className="bg-off-white p-4 rounded-sm space-y-3 text-sm">
+                {payMethod === "bank" ? (
+                  <>
+                    <p>
+                      <span className="text-gray-500">{t.membership.bankName}:</span>{" "}
+                      <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.bankName}</span>
+                    </p>
+                    <p>
+                      <span className="text-gray-500">{t.membership.accountName}:</span>{" "}
+                      <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountName}</span>
+                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p>
+                        <span className="text-gray-500">{t.membership.accountNumber}:</span>{" "}
+                        <span className="font-semibold text-charcoal tracking-wide">
+                          {MEMBERSHIP_PAYMENT.accountNumber}
+                        </span>
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyValue("account", MEMBERSHIP_PAYMENT.accountNumber)
+                        }
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-sm border border-gray-200 bg-white text-charcoal hover:border-gold transition-colors"
+                      >
+                        {copiedField === "account" ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                        {copiedField === "account" ? t.membership.copied : t.membership.copy}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p>
+                      <span className="text-gray-500">{t.membership.telebirr}:</span>{" "}
+                      <span className="font-semibold text-charcoal tracking-wide">
+                        {MEMBERSHIP_PAYMENT.telebirr}
+                      </span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => copyValue("telebirr", MEMBERSHIP_PAYMENT.telebirr)}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-sm border border-gray-200 bg-white text-charcoal hover:border-gold transition-colors"
+                    >
+                      {copiedField === "telebirr" ? (
+                        <Check className="w-3.5 h-3.5 text-green-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                      {copiedField === "telebirr" ? t.membership.copied : t.membership.copy}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
                   {t.membership.invoice}
                 </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,application/pdf"
-                    onChange={(e) => setInvoice(e.target.files?.[0] || null)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  />
-                  <div className="flex items-center gap-3 px-4 py-3 border border-dashed border-gray-300 rounded-sm hover:border-gold transition-colors bg-gray-50">
-                    <Upload className="w-5 h-5 text-gray-400 shrink-0" />
-                    <span className="text-sm text-gray-500 truncate">
-                      {invoice
-                        ? interpolate(t.membership.invoiceSelected, { name: invoice.name })
-                        : t.membership.invoiceHint}
-                    </span>
+                {!invoice ? (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
+                      onChange={(e) => setInvoice(e.target.files?.[0] || null)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="flex items-center gap-3 px-4 py-3 border border-dashed border-gray-300 rounded-sm hover:border-gold transition-colors bg-gray-50">
+                      <Upload className="w-5 h-5 text-gray-400 shrink-0" />
+                      <span className="text-sm text-gray-500 truncate">
+                        {t.membership.invoiceHint}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-sm border border-gold/40 bg-gold/5 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-charcoal truncate">
+                          {interpolate(t.membership.invoiceSelected, { name: invoice.name })}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {(invoice.size / 1024).toFixed(0)} KB · {invoice.type || "file"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setInvoice(null)}
+                        className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-red-600 shrink-0"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        {t.membership.removeReceipt}
+                      </button>
+                    </div>
+                    {invoicePreview && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={invoicePreview}
+                        alt={invoice.name}
+                        className="max-h-48 rounded-sm border border-gray-200 object-contain bg-white"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             </section>
 

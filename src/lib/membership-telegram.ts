@@ -9,10 +9,16 @@ export function getTelegramBotUsername() {
   return fromEnv || TELEGRAM_BOT_USERNAME;
 }
 
+/** Telegram start payloads prefer [A-Za-z0-9_]; convert hyphens for reliability. */
+export function toTelegramStartPayload(applicationRef: string) {
+  return applicationRef.trim().replace(/-/g, "_");
+}
+
 export function telegramBotDeepLink(applicationRef: string) {
   const username = getTelegramBotUsername();
   if (!username || !applicationRef.trim()) return null;
-  return `https://t.me/${username}?start=${encodeURIComponent(applicationRef.trim())}`;
+  const start = toTelegramStartPayload(applicationRef);
+  return `https://t.me/${username}?start=${start}`;
 }
 
 async function telegramApi(method: string, body: FormData | Record<string, unknown>) {
@@ -47,7 +53,7 @@ export async function sendTelegramText(chatId: string, text: string) {
   });
 }
 
-export async function sendInvoiceViaTelegram(params: {
+export async function sendDocumentViaTelegram(params: {
   chatId: string;
   fileName: string;
   pdf: Buffer;
@@ -63,6 +69,9 @@ export async function sendInvoiceViaTelegram(params: {
   );
   return telegramApi("sendDocument", form);
 }
+
+/** @deprecated Use sendDocumentViaTelegram */
+export const sendInvoiceViaTelegram = sendDocumentViaTelegram;
 
 export function approvalInvoiceCaption(application: {
   fullName: string;
@@ -81,16 +90,34 @@ export function approvalInvoiceCaption(application: {
     .join("\n");
 }
 
+export function approvalIdCardCaption(application: {
+  fullName: string;
+  membershipId: string | null;
+  applicationRef: string;
+}) {
+  return [
+    `${SITE_NAME}`,
+    `Dear ${application.fullName},`,
+    `Your membership ID card is attached.`,
+    application.membershipId ? `Membership ID: ${application.membershipId}` : "",
+    `Application: ${application.applicationRef}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function startWelcomeMessage(applicationRef: string, linked: boolean) {
   if (linked) {
     return [
       `Thanks! Your Telegram is linked to application ${applicationRef}.`,
-      `When an administrator approves your membership, your official invoice will be sent here.`,
+      `When an administrator approves your membership, your ID card and official invoice will be sent here.`,
     ].join("\n");
   }
   return [
     `Welcome to ${SITE_NAME}.`,
-    `We could not find application ${applicationRef}.`,
-    `Open the membership status page and use the Start link from your confirmation screen.`,
+    applicationRef
+      ? `We could not find application ${applicationRef}.`
+      : `We could not match your Telegram account yet.`,
+    `Open the Start link from your membership confirmation page (it includes your application reference), or make sure the Telegram username on your application matches this account.`,
   ].join("\n");
 }

@@ -9,12 +9,13 @@ import {
   peekNextMembershipId,
   rejectMembershipApplication,
 } from "@/lib/membership-db";
-import { PHOTO_DOCUMENT_TYPES, STAMPED_INVOICE_TYPE } from "@/lib/membership";
+import { PHOTO_DOCUMENT_TYPES, MEMBERSHIP_ID_CARD_TYPE, STAMPED_INVOICE_TYPE } from "@/lib/membership";
 import { generateOfficialDocuments } from "@/lib/membership-documents";
 import { notifyMemberApproved } from "@/lib/membership-email";
 import {
+  approvalIdCardCaption,
   approvalInvoiceCaption,
-  sendInvoiceViaTelegram,
+  sendDocumentViaTelegram,
   telegramConfigured,
 } from "@/lib/membership-telegram";
 
@@ -106,17 +107,27 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     const stamped = generated.find((doc) => doc.documentType === STAMPED_INVOICE_TYPE);
-    const idCard = generated.find((doc) => doc.documentType === "membership_id_card");
+    const idCard = generated.find((doc) => doc.documentType === MEMBERSHIP_ID_CARD_TYPE);
 
-    if (telegramConfigured() && application.telegramChatId && stamped) {
+    if (telegramConfigured() && application.telegramChatId) {
       try {
-        await sendInvoiceViaTelegram({
-          chatId: application.telegramChatId,
-          fileName: stamped.fileName,
-          pdf: stamped.fileData,
-          caption: approvalInvoiceCaption(application),
-        });
-        application = (await markTelegramInvoiceSent(id)) || application;
+        if (idCard) {
+          await sendDocumentViaTelegram({
+            chatId: application.telegramChatId,
+            fileName: idCard.fileName,
+            pdf: idCard.fileData,
+            caption: approvalIdCardCaption(application),
+          });
+        }
+        if (stamped) {
+          await sendDocumentViaTelegram({
+            chatId: application.telegramChatId,
+            fileName: stamped.fileName,
+            pdf: stamped.fileData,
+            caption: approvalInvoiceCaption(application),
+          });
+          application = (await markTelegramInvoiceSent(id)) || application;
+        }
       } catch (error) {
         console.error("Telegram auto-send on approval failed:", error);
       }

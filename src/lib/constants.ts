@@ -29,7 +29,9 @@ export const TELEGRAM_INVOICE_BOT_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
 export function telegramInvoiceBotDeepLink(applicationRef: string) {
   const ref = applicationRef.trim();
   if (!ref) return TELEGRAM_INVOICE_BOT_URL;
-  return `${TELEGRAM_INVOICE_BOT_URL}?start=${encodeURIComponent(ref)}`;
+  // Telegram start payloads are most reliable as [A-Za-z0-9_]
+  const start = ref.replace(/-/g, "_");
+  return `${TELEGRAM_INVOICE_BOT_URL}?start=${start}`;
 }
 
 export const MEMBERSHIP_PAYMENT = {
@@ -41,9 +43,9 @@ export const MEMBERSHIP_PAYMENT = {
   officerName: "EBOA President",
   signaturePath: "public/images/admin-signature.png",
   fees: {
-    gold: "ETB 2,000",
-    silver: "ETB 1,200",
-    white: "ETB 800",
+    gold: "ETB 5,000",
+    silver: "ETB 2,500",
+    white: "ETB 1,000",
   },
 };
 
