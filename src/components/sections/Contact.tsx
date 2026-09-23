@@ -56,10 +56,11 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-off-white">
+    <section id="contact" className="py-20 md:py-28 bg-off-white relative overflow-hidden">
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
           title={t.contact.title}
           subtitle={t.contact.subtitle}
@@ -99,6 +100,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-charcoal mb-1">{t.contact.officeAddress}</h3>
                   <p className="text-gray-600">{t.contact.addressValue}</p>
+                  <p className="text-sm text-[#1a5a6e] mt-0.5">{t.contact.addressValueAmharic}</p>
                 </div>
               </div>
 
@@ -109,7 +111,7 @@ export default function Contact() {
                     href={CONTACT.social.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-11 h-11 bg-charcoal text-white rounded-sm flex items-center justify-center hover:bg-gold hover:text-charcoal transition-all"
+                    className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
                     aria-label="Facebook"
                   >
                     <FacebookIcon className="w-5 h-5" />
@@ -118,7 +120,7 @@ export default function Contact() {
                     href={CONTACT.social.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-11 h-11 bg-charcoal text-white rounded-sm flex items-center justify-center hover:bg-gold hover:text-charcoal transition-all"
+                    className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
                     aria-label="YouTube"
                   >
                     <YoutubeIcon className="w-5 h-5" />
@@ -127,7 +129,7 @@ export default function Contact() {
                     href={CONTACT.social.tiktok}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-11 h-11 bg-charcoal text-white rounded-sm flex items-center justify-center hover:bg-gold hover:text-charcoal transition-all"
+                    className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
                     aria-label="TikTok"
                   >
                     <TikTokIcon className="w-5 h-5" />
@@ -135,19 +137,33 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="rounded-sm overflow-hidden bg-gray-200 h-48 flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <MapPin className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm">{t.contact.mapsPlaceholder}</p>
-                  <p className="text-xs text-gray-400 mt-1">{t.contact.addressValue}</p>
+              <div className="rounded-sm overflow-hidden border border-[#ffd8a8] shadow-sm shadow-gold/10">
+                <div className="relative w-full h-56 md:h-64 bg-[#fff0de]">
+                  <iframe
+                    title={t.contact.mapsTitle}
+                    src={CONTACT.mapEmbedUrl}
+                    className="absolute inset-0 w-full h-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
                 </div>
+                <a
+                  href={CONTACT.mapLinkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-white text-sm font-semibold text-charcoal hover:text-gold hover:bg-gold/10 transition-colors border-t border-[#ffd8a8]"
+                >
+                  <MapPin className="w-4 h-4 text-gold" />
+                  {t.contact.mapsOpen}
+                </a>
               </div>
             </div>
           </AnimatedCard>
 
           <AnimatedCard delay={200}>
-            <form key={locale} onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100">
-              <h3 className="text-xl font-bold text-charcoal mb-6">{t.contact.formTitle}</h3>
+            <form key={locale} onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 md:p-8 rounded-sm shadow-lg shadow-gold/10 border border-[#ffd8a8]">
+              <h3 className="font-display text-xl font-bold text-charcoal mb-6">{t.contact.formTitle}</h3>
 
               <div className="space-y-4">
                 <div>
@@ -158,7 +174,7 @@ export default function Contact() {
                     {...register("name")}
                     id="name"
                     type="text"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-colors"
+                    className="form-field-input"
                     placeholder={t.contact.namePlaceholder}
                   />
                   {errors.name && (
@@ -175,7 +191,7 @@ export default function Contact() {
                       {...register("phone")}
                       id="phone"
                       type="tel"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-colors"
+                      className="form-field-input"
                       placeholder="+251..."
                     />
                     {errors.phone && (
@@ -190,7 +206,7 @@ export default function Contact() {
                       {...register("email")}
                       id="email"
                       type="email"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-colors"
+                      className="form-field-input"
                       placeholder="your@email.com"
                     />
                     {errors.email && (
@@ -207,7 +223,7 @@ export default function Contact() {
                     {...register("subject")}
                     id="subject"
                     type="text"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-colors"
+                    className="form-field-input"
                     placeholder={t.contact.subjectPlaceholder}
                   />
                   {errors.subject && (
@@ -223,7 +239,7 @@ export default function Contact() {
                     {...register("message")}
                     id="message"
                     rows={5}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition-colors resize-none"
+                    className="form-field-input resize-none"
                     placeholder={t.contact.messagePlaceholder}
                   />
                   {errors.message && (

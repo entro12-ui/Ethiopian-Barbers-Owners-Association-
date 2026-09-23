@@ -53,8 +53,9 @@ export default function Gallery() {
   }, [lightboxIndex]);
 
   return (
-    <section id="gallery" className="py-20 md:py-28 bg-off-white">
-      <div className="container mx-auto px-4 lg:px-8">
+    <section id="gallery" className="py-20 md:py-28 bg-off-white relative overflow-hidden">
+      <div className="absolute -left-20 top-40 w-64 h-64 bg-brown/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
           title={t.gallery.title}
           subtitle={t.gallery.subtitle}
@@ -69,8 +70,8 @@ export default function Gallery() {
                 className={cn(
                   "px-4 py-2 text-sm rounded-sm transition-all duration-300",
                   activeCategory === category
-                    ? "bg-charcoal text-gold font-semibold"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                    ? "bg-gradient-to-r from-gold-light to-gold text-charcoal font-semibold shadow-md shadow-gold/30"
+                    : "bg-white text-[#1a5a6e] hover:bg-gold/10 border border-[#ffd8a8] hover:border-gold/50"
                 )}
               >
                 {t.gallery.categories[category]}
@@ -84,7 +85,7 @@ export default function Gallery() {
             <AnimatedCard key={item.src} delay={index * 50}>
               <button
                 onClick={() => openLightbox(index)}
-                className="group relative block w-full break-inside-avoid rounded-sm overflow-hidden cursor-pointer"
+                className="group relative block w-full break-inside-avoid rounded-sm overflow-hidden cursor-pointer ring-1 ring-[#ffd8a8] hover:ring-gold/50 shadow-sm hover:shadow-lg hover:shadow-gold/15 transition-all"
               >
                 <Image
                   src={imagePath(item.src)}

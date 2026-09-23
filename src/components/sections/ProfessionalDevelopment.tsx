@@ -48,8 +48,8 @@ export default function ProfessionalDevelopment() {
               -45deg,
               transparent,
               transparent 20px,
-              #C5A55A 20px,
-              #C5A55A 21px
+              #ff9f1c 20px,
+              #ff9f1c 21px
             )`,
           }}
         />
@@ -66,14 +66,14 @@ export default function ProfessionalDevelopment() {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className="group p-6 bg-white rounded-sm border border-gray-100 hover:border-gold/30 hover:shadow-lg transition-all duration-300"
+                className="group p-6 bg-white rounded-sm border border-[#ffd8a8] hover:border-gold/50 hover:shadow-lg hover:shadow-gold/15 transition-all duration-300"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="w-10 h-10 bg-gold/10 rounded-sm flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
-                  <feature.icon className="w-5 h-5 text-gold" />
+                <div className="w-10 h-10 bg-gradient-to-br from-gold/25 to-brown/20 rounded-sm flex items-center justify-center mb-4 group-hover:from-gold/40 group-hover:to-brown/30 transition-colors">
+                  <feature.icon className="w-5 h-5 text-charcoal" />
                 </div>
                 <h3 className="font-bold text-charcoal mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+                <p className="text-sm text-[#1a5a6e] leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>

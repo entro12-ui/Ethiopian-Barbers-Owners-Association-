@@ -19,37 +19,30 @@ export default function Hero() {
           alt={t.hero.imageAlt}
           fill
           priority
-          className="object-cover"
+          className="object-cover scale-105"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-charcoal/95 via-charcoal/80 to-charcoal/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-charcoal/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-charcoal/92 via-dark-gray/75 to-brown/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-transparent to-gold/20" />
       </div>
 
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `repeating-linear-gradient(
-              45deg,
-              transparent,
-              transparent 40px,
-              rgba(197, 165, 90, 0.1) 40px,
-              rgba(197, 165, 90, 0.1) 41px
-            )`,
-          }}
-        />
-      </div>
+      <div className="absolute -right-16 top-1/4 w-80 h-80 rounded-full bg-gold/30 blur-3xl pointer-events-none animate-pulse" />
+      <div className="absolute left-1/4 -bottom-10 w-[28rem] h-48 bg-brown/40 blur-3xl pointer-events-none" />
 
       <div className="relative container mx-auto px-4 lg:px-8 pt-24 pb-16">
         <div className="max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up">
+          <p className="inline-flex items-center gap-2 text-charcoal text-xs uppercase tracking-[0.2em] font-bold mb-5 animate-fade-in-up bg-gradient-to-r from-gold-light to-gold px-3 py-1.5 rounded-sm shadow-lg shadow-gold/30">
+            EBOA
+          </p>
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up drop-shadow-lg">
             {t.hero.titleStart}
-            <span className="text-gold">{t.hero.titleHighlight}</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold to-[#ff7a00]">
+              {t.hero.titleHighlight}
+            </span>
             {t.hero.titleEnd}
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-8 max-w-2xl animate-fade-in-up animation-delay-200">
+          <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 max-w-2xl animate-fade-in-up animation-delay-200">
             {t.hero.subtitle}
           </p>
 
@@ -66,16 +59,16 @@ export default function Hero() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 pt-8 border-t border-white/10 animate-fade-in-up animation-delay-600">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 pt-8 border-t border-gold/40 animate-fade-in-up animation-delay-600">
             {[
               { label: t.hero.values.professionalism, icon: "✦" },
               { label: t.hero.values.training, icon: "◈" },
               { label: t.hero.values.health, icon: "♦" },
               { label: t.hero.values.community, icon: "◆" },
             ].map((item) => (
-              <div key={item.label} className="text-center">
-                <span className="text-gold text-xl">{item.icon}</span>
-                <p className="text-gray-400 text-sm mt-1">{item.label}</p>
+              <div key={item.label} className="text-center rounded-sm bg-white/10 backdrop-blur-sm border border-gold/35 py-3 px-2 hover:bg-gold/15 hover:border-gold/60 transition-all duration-300">
+                <span className="text-gold-light text-xl">{item.icon}</span>
+                <p className="text-white/85 text-sm mt-1 font-medium">{item.label}</p>
               </div>
             ))}
           </div>
@@ -84,10 +77,10 @@ export default function Hero() {
 
       <button
         onClick={() => scrollToSection("about")}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-gold transition-colors animate-bounce"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gold-light hover:text-white transition-colors animate-bounce"
         aria-label={t.hero.scrollAbout}
       >
-        <ChevronDown className="w-8 h-8" />
+        <ChevronDown className="w-8 h-8 drop-shadow" />
       </button>
     </section>
   );

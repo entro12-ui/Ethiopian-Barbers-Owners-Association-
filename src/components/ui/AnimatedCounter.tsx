@@ -64,7 +64,7 @@ export default function AnimatedCounter({
         {count}
         {suffix}
       </div>
-      <div className="text-sm md:text-base text-gray-300 uppercase tracking-wider">
+      <div className="text-sm md:text-base text-white/80 uppercase tracking-wider font-medium">
         {label}
       </div>
     </div>

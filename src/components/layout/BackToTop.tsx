@@ -23,7 +23,7 @@ export default function BackToTop() {
     <button
       onClick={scrollToTop}
       className={cn(
-        "fixed bottom-6 left-6 z-50 w-12 h-12 bg-gold text-charcoal rounded-sm flex items-center justify-center shadow-lg hover:bg-gold-light transition-all duration-300",
+        "fixed bottom-6 left-6 z-50 w-12 h-12 bg-gradient-to-br from-gold-light to-gold text-charcoal rounded-sm flex items-center justify-center shadow-lg shadow-gold/40 hover:shadow-xl hover:shadow-gold/50 hover:-translate-y-1 transition-all duration-300",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
       )}
       aria-label={t.common.backToTop}

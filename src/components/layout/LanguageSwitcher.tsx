@@ -45,7 +45,7 @@ export default function LanguageSwitcher({ variant = "header" }: LanguageSwitche
   if (variant === "menu") {
     return (
       <div className="px-4 py-3">
-        <p className="text-xs uppercase tracking-wider text-gray-500 mb-3">{t.language.label}</p>
+        <p className="text-xs uppercase tracking-wider text-[#1a5a6e] mb-3">{t.language.label}</p>
         <div className="grid grid-cols-2 gap-2" role="group" aria-label={t.language.select}>
           {LOCALE_OPTIONS.map((option) => {
             const selected = option.code === locale;
@@ -58,8 +58,8 @@ export default function LanguageSwitcher({ variant = "header" }: LanguageSwitche
                 className={cn(
                   "flex items-center justify-center gap-2 px-3 py-3 rounded-sm text-sm font-semibold transition-all",
                   selected
-                    ? "bg-gold text-charcoal"
-                    : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-gold"
+                    ? "bg-gold text-charcoal shadow-sm shadow-gold/30"
+                    : "bg-[#fff0de] text-charcoal border border-[#ffd8a8] hover:border-gold/50"
                 )}
               >
                 <span aria-hidden="true">{option.flag}</span>
@@ -79,8 +79,8 @@ export default function LanguageSwitcher({ variant = "header" }: LanguageSwitche
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
           "inline-flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-all",
-          "text-gray-200 hover:text-gold hover:bg-white/5 border border-white/10 hover:border-gold/40",
-          open && "text-gold border-gold/40 bg-white/5"
+          "text-charcoal/85 hover:text-gold hover:bg-gold/10 border border-[#ffd8a8] hover:border-gold/50 bg-white/80",
+          open && "text-gold border-gold/50 bg-gold/10"
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -95,7 +95,7 @@ export default function LanguageSwitcher({ variant = "header" }: LanguageSwitche
         <div
           role="listbox"
           aria-label={t.language.select}
-          className="absolute right-0 mt-2 w-44 bg-charcoal/98 backdrop-blur-md border border-white/10 rounded-sm shadow-xl shadow-black/40 overflow-hidden z-50 animate-slide-up"
+          className="absolute right-0 mt-2 w-44 bg-white border border-[#ffd8a8] rounded-sm shadow-xl shadow-charcoal/10 overflow-hidden z-50 animate-slide-up"
         >
           {LOCALE_OPTIONS.map((option) => {
             const selected = option.code === locale;
@@ -108,7 +108,7 @@ export default function LanguageSwitcher({ variant = "header" }: LanguageSwitche
                 onClick={() => selectLocale(option.code)}
                 className={cn(
                   "w-full flex items-center gap-3 px-3 py-2.5 text-sm text-left transition-colors",
-                  selected ? "bg-gold/15 text-gold" : "text-gray-200 hover:bg-white/5 hover:text-gold"
+                  selected ? "bg-gold/15 text-gold" : "text-charcoal hover:bg-gold/10 hover:text-gold"
                 )}
               >
                 <span aria-hidden="true">{option.flag}</span>

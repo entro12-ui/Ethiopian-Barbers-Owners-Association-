@@ -10,28 +10,16 @@ export default function CTASection() {
   const { t } = useI18n();
 
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-br from-dark-gray via-charcoal to-charcoal relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 60px,
-              rgba(197, 165, 90, 0.15) 60px,
-              rgba(197, 165, 90, 0.15) 61px
-            )`,
-          }}
-        />
-      </div>
+    <section className="py-20 md:py-28 relative overflow-hidden bg-gradient-to-br from-gold/40 via-off-white to-brown/30">
+      <div className="absolute -top-16 left-1/4 w-80 h-80 bg-gold/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-brown/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-4 lg:px-8 relative text-center">
         <AnimatedCard>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 max-w-3xl mx-auto leading-tight">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal mb-6 max-w-3xl mx-auto leading-tight">
             {t.cta.title}
           </h2>
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-[#1a5a6e] mb-8 max-w-2xl mx-auto leading-relaxed">
             {t.cta.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -39,7 +27,7 @@ export default function CTASection() {
               <Button size="lg">{t.cta.join}</Button>
             </Link>
             <Button
-              variant="secondary"
+              variant="outline"
               size="lg"
               onClick={() => scrollToSection("contact")}
             >

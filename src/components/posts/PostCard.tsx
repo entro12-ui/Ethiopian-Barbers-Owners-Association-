@@ -17,28 +17,29 @@ export default function PostCard({ post, showType = false }: PostCardProps) {
   const date = post.eventDate || post.applicationDeadline || post.publishedAt;
 
   return (
-    <article className="group bg-white rounded-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-300 h-full flex flex-col">
-      <div className="relative h-44 overflow-hidden bg-gray-100">
+    <article className="group bg-white rounded-sm overflow-hidden border border-[#ffd8a8] hover:border-gold/60 hover:shadow-xl hover:shadow-gold/15 hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-charcoal to-brown">
         {post.imageUrl ? (
           <Image
             src={post.imageUrl}
             alt={post.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="object-cover group-hover:scale-110 transition-transform duration-700"
             sizes="(max-width: 768px) 100vw, 33vw"
             unoptimized
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-charcoal to-dark-gray" />
+          <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-dark-gray to-brown" />
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute top-3 left-3 flex gap-2">
           {showType && (
-            <span className="px-2 py-1 bg-white/90 text-charcoal text-xs font-semibold rounded-sm">
+            <span className="px-2 py-1 bg-white/95 text-charcoal text-xs font-semibold rounded-sm shadow-sm">
               {getPostTypeLabel(post.type, t.posts.types)}
             </span>
           )}
           {post.category && (
-            <span className="px-2 py-1 bg-gold/90 text-charcoal text-xs font-semibold rounded-sm">
+            <span className="px-2 py-1 bg-gradient-to-r from-gold-light to-gold text-charcoal text-xs font-semibold rounded-sm shadow-sm shadow-gold/30">
               {post.category}
             </span>
           )}
@@ -49,22 +50,22 @@ export default function PostCard({ post, showType = false }: PostCardProps) {
           {post.title}
         </h3>
         {(date || post.location) && (
-          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 mb-3">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#1a5a6e] mb-3">
             {date && (
               <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
+                <Calendar className="w-3 h-3 text-gold" />
                 {formatPostDate(date, locale)}
               </span>
             )}
             {post.location && (
               <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
+                <MapPin className="w-3 h-3 text-gold" />
                 {post.location}
               </span>
             )}
           </div>
         )}
-        <p className="text-sm text-gray-600 leading-relaxed flex-1 mb-4 line-clamp-3">
+        <p className="text-sm text-[#1a5a6e] leading-relaxed flex-1 mb-4 line-clamp-3">
           {post.summary || post.body}
         </p>
         <Link href={`/posts/${post.slug}`}>

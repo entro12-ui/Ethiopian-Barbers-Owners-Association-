@@ -9,8 +9,9 @@ export default function FAQ() {
   const { t } = useI18n();
 
   return (
-    <section id="faq" className="py-20 md:py-28 bg-white">
-      <div className="container mx-auto px-4 lg:px-8">
+    <section id="faq" className="py-20 md:py-28 bg-[#fff0de] relative overflow-hidden">
+      <div className="absolute top-10 right-10 w-48 h-48 bg-gold/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
           title={t.faq.title}
           subtitle={t.faq.subtitle}

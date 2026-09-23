@@ -11,7 +11,12 @@ export const LOGO_ALT = "Ethiopian Barbers & Owners Association logo";
 export const CONTACT = {
   phone: "+251911237470",
   email: "eboaethiopia@gmail.com",
-  address: "Addis Ababa, Ethiopia",
+  address: "Mercy Plaza, Gurd Sholla, Addis Ababa",
+  mapQuery: "Mercy Plaza Gurd Sholla Addis Ababa",
+  mapEmbedUrl:
+    "https://maps.google.com/maps?q=Mercy+Plaza+Gurd+Sholla+Addis+Ababa&z=16&output=embed",
+  mapLinkUrl:
+    "https://www.google.com/maps/search/?api=1&query=Mercy+Plaza+Gurd+Sholla+Addis+Ababa",
   social: {
     facebook: "https://www.facebook.com/share/18bM6Wjacp/",
     youtube: "https://www.youtube.com/@EBOAEthiopia",

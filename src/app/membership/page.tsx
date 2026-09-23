@@ -13,15 +13,42 @@ import { interpolate } from "@/lib/i18n";
 import { ALLOWED_INVOICE_TYPES, MAX_FILE_SIZE } from "@/lib/membership";
 import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2, ArrowLeft, Upload, Copy, Check, X } from "lucide-react";
+import {
+  CheckCircle,
+  Loader2,
+  ArrowLeft,
+  Upload,
+  Copy,
+  Check,
+  X,
+  Scissors,
+  Store,
+  Camera,
+} from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
 type MembershipLevel = "gold" | "silver" | "white";
 type PayMethod = "bank" | "telebirr";
+type ApplicantType = "barber" | "owner";
 
 const LEVEL_ORDER: MembershipLevel[] = ["gold", "silver", "white"];
+
+function FieldHelp({ children }: { children: ReactNode }) {
+  return <p className="text-xs text-[#1a5a6e] mt-1.5 leading-relaxed">{children}</p>;
+}
+
+function StepLabel({ step, label }: { step: number; label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold text-sm font-semibold tabular-nums ring-1 ring-gold/35">
+        {step}
+      </span>
+      <h2 className="font-display text-xl md:text-2xl text-charcoal tracking-tight">{label}</h2>
+    </div>
+  );
+}
 
 export default function MembershipPage() {
   const { locale, t } = useI18n();
@@ -54,6 +81,7 @@ export default function MembershipPage() {
   });
 
   const selectedLevel = watch("membershipLevel") as MembershipLevel;
+  const selectedType = watch("applicantType") as ApplicantType;
   const amountDue = MEMBERSHIP_PAYMENT.fees[selectedLevel];
 
   useEffect(() => {
@@ -82,6 +110,13 @@ export default function MembershipPage() {
     if (level === "silver") return t.membership.silver;
     return t.membership.white;
   };
+
+  const levelBenefit = (level: MembershipLevel) => {
+    if (level === "gold") return t.membership.goldBenefit;
+    if (level === "silver") return t.membership.silverBenefit;
+    return t.membership.whiteBenefit;
+  };
+
   const onSubmit = async (data: MembershipFormData) => {
     if (!invoice) {
       showToast(t.membership.invoiceRequired, "error");
@@ -137,23 +172,23 @@ export default function MembershipPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-off-white pt-24 pb-16">
-          <div className="container mx-auto px-4 lg:px-8 max-w-2xl text-center">
-            <div className="bg-white p-8 md:p-12 rounded-sm shadow-sm border border-gray-100">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-10 h-10 text-green-600" />
+        <main className="relative min-h-screen membership-atmosphere pt-24 pb-16 overflow-hidden">
+          <div className="container mx-auto px-4 lg:px-8 max-w-2xl text-center relative z-10">
+            <div className="bg-[#ffffff]/95 backdrop-blur-sm p-8 md:p-12 border border-gold/25 shadow-[0_20px_50px_-24px_rgba(18,20,26,0.35)] animate-soft-reveal">
+              <div className="w-16 h-16 bg-gradient-to-br from-gold/20 to-brown/10 flex items-center justify-center mx-auto mb-6 ring-1 ring-gold/25">
+                <CheckCircle className="w-8 h-8 text-gold" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-charcoal mb-4">
+              <h1 className="font-display text-2xl md:text-3xl text-charcoal mb-4">
                 {t.membership.successTitle}
               </h1>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                {t.membership.successBody}
-              </p>
-              <div className="bg-off-white p-4 rounded-sm mb-8">
-                <p className="text-sm text-gray-500">{t.membership.reference}</p>
-                <p className="text-xl font-bold text-gold">{applicationId}</p>
+              <p className="text-[#1a5a6e] mb-6 leading-relaxed">{t.membership.successBody}</p>
+              <div className="bg-off-white border border-gold/25 p-4 mb-8">
+                <p className="text-xs uppercase tracking-[0.15em] text-[#1a5a6e]">
+                  {t.membership.reference}
+                </p>
+                <p className="text-xl font-semibold text-gold mt-1 tabular-nums">{applicationId}</p>
               </div>
-              <p className="text-sm text-gray-600 mb-4">{t.membership.telegramStartHint}</p>
+              <p className="text-sm text-[#1a5a6e] mb-4">{t.membership.telegramStartHint}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
                   href={telegramBotLink || telegramInvoiceBotDeepLink(applicationId)}
@@ -182,24 +217,28 @@ export default function MembershipPage() {
       <Navbar />
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      <main className="min-h-screen bg-off-white pt-24 pb-16">
-        <div className="container mx-auto px-4 lg:px-8 max-w-2xl">
+      <main className="relative min-h-screen membership-atmosphere pt-24 pb-16 overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-8 max-w-2xl relative z-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gold transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-[#1a5a6e] hover:text-gold transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
             {t.common.backHome}
           </Link>
 
-          <div className="text-center mb-10">
+          <header className="text-center mb-12 animate-fade-in-up">
             <div className="flex justify-center mb-6">
               <Logo size="xl" alt={t.site.logoAlt} />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-charcoal mb-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-3">
+              {t.membership.eyebrow}
+            </p>
+            <h1 className="font-display text-3xl md:text-4xl lg:text-[2.75rem] text-charcoal mb-4 tracking-tight">
               {t.membership.title}
             </h1>
-            <p className="text-gray-600 max-w-xl mx-auto">
+            <div className="mx-auto w-12 h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-4" />
+            <p className="text-[#1a5a6e] max-w-xl mx-auto leading-relaxed">
               {t.membership.subtitle}
             </p>
             <p className="mt-4">
@@ -207,19 +246,80 @@ export default function MembershipPage() {
                 {t.membership.checkStatus}
               </Link>
             </p>
-          </div>
+          </header>
 
           <form key={locale} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-4">
+            {/* Step 1 — Role */}
+            <section className="bg-[#ffffff]/95 backdrop-blur-sm p-6 md:p-8 border border-gold/20 shadow-[0_12px_40px_-20px_rgba(18,20,26,0.22)] animate-fade-in-up animation-delay-200">
+              <StepLabel step={1} label={t.membership.stepRole} />
+              <p className="text-sm text-[#1a5a6e] mb-4 leading-relaxed">
+                {t.membership.memberTypeIntro}
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {(
+                  [
+                    {
+                      id: "barber" as const,
+                      label: t.membership.barber,
+                      help: t.membership.barberHelp,
+                      Icon: Scissors,
+                    },
+                    {
+                      id: "owner" as const,
+                      label: t.membership.owner,
+                      help: t.membership.ownerHelp,
+                      Icon: Store,
+                    },
+                  ] as const
+                ).map(({ id, label, help, Icon }) => {
+                  const selected = selectedType === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() =>
+                        setValue("applicantType", id, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
+                      }
+                      className={`text-left p-4 border transition-all duration-300 ${
+                        selected
+                          ? "border-gold bg-gradient-to-br from-gold/18 to-brown/8 ring-1 ring-gold/45 shadow-sm shadow-gold/15"
+                          : "border-[#ffd8a8] bg-white hover:border-gold/55"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <Icon
+                          className={`w-5 h-5 shrink-0 ${selected ? "text-gold" : "text-[#8aa0a8]"}`}
+                        />
+                        <span className="font-semibold text-charcoal">{label}</span>
+                      </div>
+                      <p className="text-xs text-[#1a5a6e] leading-relaxed">{help}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <input type="hidden" {...register("applicantType")} />
+              {errors.applicantType && (
+                <p className="text-red-500 text-xs mt-2">{errors.applicantType.message}</p>
+              )}
+            </section>
+
+            {/* Step 2 — Details */}
+            <section className="bg-[#ffffff]/95 backdrop-blur-sm p-6 md:p-8 border border-gold/20 shadow-[0_12px_40px_-20px_rgba(18,20,26,0.22)] space-y-5 animate-fade-in-up animation-delay-400">
+              <StepLabel step={2} label={t.membership.stepDetails} />
+
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
                   {t.membership.fullName}
                 </label>
                 <input
                   {...register("fullName")}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
+                  className="form-field-input"
                   placeholder={t.membership.fullNamePlaceholder}
                 />
+                <FieldHelp>{t.membership.fullNameHelp}</FieldHelp>
                 {errors.fullName && (
                   <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
                 )}
@@ -232,9 +332,10 @@ export default function MembershipPage() {
                 <input
                   {...register("phone")}
                   type="tel"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder="+251..."
+                  className="form-field-input"
+                  placeholder={t.membership.phonePlaceholder}
                 />
+                <FieldHelp>{t.membership.phoneHelp}</FieldHelp>
                 {errors.phone && (
                   <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
                 )}
@@ -242,14 +343,16 @@ export default function MembershipPage() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-1">
-                  {t.membership.email} <span className="text-gray-400 font-normal">{t.membership.optional}</span>
+                  {t.membership.email}{" "}
+                  <span className="text-[#8aa0a8] font-normal">{t.membership.optional}</span>
                 </label>
                 <input
                   {...register("email")}
                   type="email"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
+                  className="form-field-input"
                   placeholder="your@email.com"
                 />
+                <FieldHelp>{t.membership.emailHelp}</FieldHelp>
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
                 )}
@@ -260,120 +363,125 @@ export default function MembershipPage() {
                   {t.membership.telegramUsername}
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500">@</span>
+                  <span className="text-[#1a5a6e] font-medium">@</span>
                   <input
                     {...register("telegramUsername")}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
+                    className="form-field-input"
                     placeholder={t.membership.telegramUsernamePlaceholder}
                     autoComplete="off"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-2 leading-relaxed">{t.membership.telegramNotice}</p>
+                <FieldHelp>{t.membership.telegramNotice}</FieldHelp>
                 {errors.telegramUsername && (
-                  <p className="text-red-500 text-xs mt-1">{String(errors.telegramUsername.message)}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {String(errors.telegramUsername.message)}
+                  </p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-1">
-                  {t.membership.barbershopName}
-                </label>
-                <input
-                  {...register("barbershopName")}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder={t.membership.barbershopNamePlaceholder}
-                />
-                {errors.barbershopName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.barbershopName.message}</p>
-                )}
-              </div>
+              <div className="pt-2 border-t border-[#ffd8a8]">
+                <p className="text-xs uppercase tracking-[0.12em] text-gold font-semibold mb-4">
+                  {selectedType === "owner" ? t.membership.owner : t.membership.barber}
+                </p>
 
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-1">
-                  {t.membership.address}
-                </label>
-                <input
-                  {...register("address")}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold"
-                  placeholder={t.membership.addressPlaceholder}
-                />
-                {errors.address && (
-                  <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>
-                )}
-              </div>
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-1">
+                      {t.membership.barbershopName}
+                    </label>
+                    <input
+                      {...register("barbershopName")}
+                      className="form-field-input"
+                      placeholder={t.membership.barbershopNamePlaceholder}
+                    />
+                    <FieldHelp>{t.membership.barbershopNameHelp}</FieldHelp>
+                    {errors.barbershopName && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.barbershopName.message}
+                      </p>
+                    )}
+                  </div>
 
-              <div>
-                <label htmlFor="applicantType" className="block text-sm font-medium text-charcoal mb-1">
-                  {t.membership.memberType}
-                </label>
-                <select
-                  id="applicantType"
-                  {...register("applicantType")}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold bg-white"
-                >
-                  <option value="barber">{t.membership.barber}</option>
-                  <option value="owner">{t.membership.owner}</option>
-                </select>
-                {errors.applicantType && (
-                  <p className="text-red-500 text-xs mt-1">{errors.applicantType.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  {t.membership.membershipLevel}
-                </label>
-                <p className="text-xs text-gray-500 mb-3">{t.membership.feeSelectHint}</p>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {LEVEL_ORDER.map((level) => {
-                    const selected = selectedLevel === level;
-                    return (
-                      <button
-                        key={level}
-                        type="button"
-                        onClick={() =>
-                          setValue("membershipLevel", level, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          })
-                        }
-                        className={`text-left rounded-sm border px-4 py-3 transition-all ${
-                          selected
-                            ? "border-gold bg-gold/10 ring-2 ring-gold/40 shadow-sm"
-                            : "border-gray-200 bg-white hover:border-gold/60"
-                        }`}
-                      >
-                        <span className="block text-sm font-semibold text-charcoal">
-                          {levelLabel(level)}
-                        </span>
-                        <span className="block mt-1 text-lg font-bold text-gold">
-                          {MEMBERSHIP_PAYMENT.fees[level]}
-                        </span>
-                      </button>
-                    );
-                  })}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-1">
+                      {t.membership.address}
+                    </label>
+                    <input
+                      {...register("address")}
+                      className="form-field-input"
+                      placeholder={t.membership.addressPlaceholder}
+                    />
+                    <FieldHelp>{t.membership.addressHelp}</FieldHelp>
+                    {errors.address && (
+                      <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>
+                    )}
+                  </div>
                 </div>
-                <input type="hidden" {...register("membershipLevel")} />
-                {errors.membershipLevel && (
-                  <p className="text-red-500 text-xs mt-1">{errors.membershipLevel.message}</p>
-                )}
               </div>
+            </section>
 
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  {t.membership.photos} <span className="text-gray-400 font-normal">{t.membership.optional}</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={(e) => setPhotos(Array.from(e.target.files || []))}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  />
-                  <div className="flex items-center gap-3 px-4 py-3 border border-dashed border-gray-300 rounded-sm hover:border-gold transition-colors bg-gray-50">
-                    <Upload className="w-5 h-5 text-gray-400 shrink-0" />
-                    <span className="text-sm text-gray-500 truncate">
+            {/* Step 3 — Level */}
+            <section className="bg-[#ffffff]/95 backdrop-blur-sm p-6 md:p-8 border border-gold/20 shadow-[0_12px_40px_-20px_rgba(18,20,26,0.22)] animate-fade-in-up animation-delay-600">
+              <StepLabel step={3} label={t.membership.stepLevel} />
+              <p className="text-xs text-[#1a5a6e] mb-4">{t.membership.feeSelectHint}</p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {LEVEL_ORDER.map((level) => {
+                  const selected = selectedLevel === level;
+                  return (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() =>
+                        setValue("membershipLevel", level, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
+                      }
+                      className={`text-left border px-4 py-4 transition-all duration-300 ${
+                        selected
+                          ? "border-gold bg-gradient-to-br from-gold/18 to-brown/8 ring-1 ring-gold/45 shadow-sm shadow-gold/15"
+                          : "border-[#ffd8a8] bg-white hover:border-gold/55"
+                      }`}
+                    >
+                      <span className="block text-sm font-semibold text-charcoal">
+                        {levelLabel(level)}
+                      </span>
+                      <span className="block mt-1 text-lg font-bold text-gold tabular-nums">
+                        {MEMBERSHIP_PAYMENT.fees[level]}
+                      </span>
+                      <span className="block mt-2 text-xs text-[#1a5a6e] leading-snug">
+                        {levelBenefit(level)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <input type="hidden" {...register("membershipLevel")} />
+              {errors.membershipLevel && (
+                <p className="text-red-500 text-xs mt-2">{errors.membershipLevel.message}</p>
+              )}
+            </section>
+
+            {/* Step 4 — Photos */}
+            <section className="bg-[#ffffff]/95 backdrop-blur-sm p-6 md:p-8 border border-gold/20 shadow-[0_12px_40px_-20px_rgba(18,20,26,0.22)]">
+              <StepLabel step={4} label={t.membership.stepPhotos} />
+              <label className="block text-sm font-medium text-charcoal mb-1">
+                {t.membership.photos}{" "}
+                <span className="text-[#8aa0a8] font-normal">{t.membership.optional}</span>
+              </label>
+              <FieldHelp>{t.membership.photosHelp}</FieldHelp>
+              <div className="relative mt-3">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={(e) => setPhotos(Array.from(e.target.files || []))}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                />
+                <div className="flex flex-col sm:flex-row items-center gap-3 px-5 py-6 border border-dashed border-gold/50 bg-gradient-to-br from-gold/[0.07] to-brown/[0.04] hover:from-gold/[0.12] hover:to-brown/[0.06] transition-colors">
+                  <Camera className="w-6 h-6 text-gold shrink-0" />
+                  <div className="text-center sm:text-left">
+                    <span className="block text-sm text-charcoal font-medium">
                       {photos.length > 0
                         ? interpolate(t.membership.photosSelected, { count: photos.length })
                         : t.membership.photosHint}
@@ -383,24 +491,29 @@ export default function MembershipPage() {
               </div>
             </section>
 
-            <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-gray-100 space-y-5">
-              <div>
-                <h2 className="text-xl font-bold text-charcoal mb-2">{t.membership.paymentTitle}</h2>
-                <p className="text-sm text-gray-600 leading-relaxed">{t.membership.paymentIntro}</p>
-              </div>
+            {/* Step 5 — Payment */}
+            <section className="bg-[#ffffff]/95 backdrop-blur-sm p-6 md:p-8 border border-gold/20 shadow-[0_12px_40px_-20px_rgba(18,20,26,0.22)] space-y-5">
+              <StepLabel step={5} label={t.membership.stepPayment} />
+              <p className="text-sm text-[#1a5a6e] leading-relaxed -mt-2">
+                {t.membership.paymentIntro}
+              </p>
 
-              <div className="rounded-sm border border-gold/30 bg-gold/10 px-4 py-4 flex flex-wrap items-end justify-between gap-3">
+              <div className="border border-gold/35 bg-gradient-to-br from-gold/20 via-gold/10 to-brown/10 px-5 py-5 flex flex-wrap items-end justify-between gap-3 shadow-sm shadow-gold/10">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-600 font-semibold">
+                  <p className="text-xs uppercase tracking-[0.15em] text-[#1a5a6e] font-semibold">
                     {t.membership.amountDue}
                   </p>
                   <p className="text-sm text-charcoal mt-1">{levelLabel(selectedLevel)}</p>
                 </div>
-                <p className="text-3xl font-bold text-gold tabular-nums">{amountDue}</p>
+                <p className="font-display text-3xl md:text-4xl text-gold tabular-nums">
+                  {amountDue}
+                </p>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-charcoal mb-2">{t.membership.paymentMethod}</p>
+                <p className="text-sm font-medium text-charcoal mb-2">
+                  {t.membership.paymentMethod}
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {(
                     [
@@ -412,10 +525,10 @@ export default function MembershipPage() {
                       key={method.id}
                       type="button"
                       onClick={() => setPayMethod(method.id)}
-                      className={`px-3 py-2.5 text-sm rounded-sm border transition-colors ${
+                      className={`px-3 py-2.5 text-sm border transition-colors ${
                         payMethod === method.id
-                          ? "bg-charcoal text-white border-charcoal font-semibold"
-                          : "bg-white text-gray-600 border-gray-200 hover:border-gold"
+                          ? "bg-gold/20 text-charcoal border-gold font-semibold"
+                          : "bg-white text-[#1a5a6e] border-[#ffd8a8] hover:border-gold"
                       }`}
                     >
                       {method.label}
@@ -424,20 +537,24 @@ export default function MembershipPage() {
                 </div>
               </div>
 
-              <div className="bg-off-white p-4 rounded-sm space-y-3 text-sm">
+              <div className="bg-off-white border border-[#ffd8a8] p-4 space-y-3 text-sm">
                 {payMethod === "bank" ? (
                   <>
                     <p>
-                      <span className="text-gray-500">{t.membership.bankName}:</span>{" "}
-                      <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.bankName}</span>
+                      <span className="text-[#1a5a6e]">{t.membership.bankName}:</span>{" "}
+                      <span className="font-medium text-charcoal">
+                        {MEMBERSHIP_PAYMENT.bankName}
+                      </span>
                     </p>
                     <p>
-                      <span className="text-gray-500">{t.membership.accountName}:</span>{" "}
-                      <span className="font-medium text-charcoal">{MEMBERSHIP_PAYMENT.accountName}</span>
+                      <span className="text-[#1a5a6e]">{t.membership.accountName}:</span>{" "}
+                      <span className="font-medium text-charcoal">
+                        {MEMBERSHIP_PAYMENT.accountName}
+                      </span>
                     </p>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p>
-                        <span className="text-gray-500">{t.membership.accountNumber}:</span>{" "}
+                        <span className="text-[#1a5a6e]">{t.membership.accountNumber}:</span>{" "}
                         <span className="font-semibold text-charcoal tracking-wide">
                           {MEMBERSHIP_PAYMENT.accountNumber}
                         </span>
@@ -447,7 +564,7 @@ export default function MembershipPage() {
                         onClick={() =>
                           copyValue("account", MEMBERSHIP_PAYMENT.accountNumber)
                         }
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-sm border border-gray-200 bg-white text-charcoal hover:border-gold transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 border border-[#ffd8a8] bg-white text-charcoal hover:border-gold transition-colors"
                       >
                         {copiedField === "account" ? (
                           <Check className="w-3.5 h-3.5 text-green-600" />
@@ -461,7 +578,7 @@ export default function MembershipPage() {
                 ) : (
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p>
-                      <span className="text-gray-500">{t.membership.telebirr}:</span>{" "}
+                      <span className="text-[#1a5a6e]">{t.membership.telebirr}:</span>{" "}
                       <span className="font-semibold text-charcoal tracking-wide">
                         {MEMBERSHIP_PAYMENT.telebirr}
                       </span>
@@ -469,7 +586,7 @@ export default function MembershipPage() {
                     <button
                       type="button"
                       onClick={() => copyValue("telebirr", MEMBERSHIP_PAYMENT.telebirr)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-sm border border-gray-200 bg-white text-charcoal hover:border-gold transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 border border-[#ffd8a8] bg-white text-charcoal hover:border-gold transition-colors"
                     >
                       {copiedField === "telebirr" ? (
                         <Check className="w-3.5 h-3.5 text-green-600" />
@@ -494,28 +611,28 @@ export default function MembershipPage() {
                       onChange={(e) => setInvoice(e.target.files?.[0] || null)}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    <div className="flex items-center gap-3 px-4 py-3 border border-dashed border-gray-300 rounded-sm hover:border-gold transition-colors bg-gray-50">
-                      <Upload className="w-5 h-5 text-gray-400 shrink-0" />
-                      <span className="text-sm text-gray-500 truncate">
+                    <div className="flex items-center gap-3 px-4 py-4 border border-dashed border-gold/50 bg-gradient-to-br from-gold/[0.07] to-brown/[0.04] hover:from-gold/[0.12] hover:to-brown/[0.06] transition-colors">
+                      <Upload className="w-5 h-5 text-gold shrink-0" />
+                      <span className="text-sm text-[#1a5a6e] truncate">
                         {t.membership.invoiceHint}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-sm border border-gold/40 bg-gold/5 p-4 space-y-3">
+                  <div className="border border-gold/40 bg-gradient-to-br from-gold/10 to-brown/5 p-4 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-charcoal truncate">
                           {interpolate(t.membership.invoiceSelected, { name: invoice.name })}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-[#1a5a6e] mt-0.5">
                           {(invoice.size / 1024).toFixed(0)} KB · {invoice.type || "file"}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => setInvoice(null)}
-                        className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-red-600 shrink-0"
+                        className="inline-flex items-center gap-1 text-xs text-[#1a5a6e] hover:text-red-600 shrink-0"
                       >
                         <X className="w-3.5 h-3.5" />
                         {t.membership.removeReceipt}
@@ -526,7 +643,7 @@ export default function MembershipPage() {
                       <img
                         src={invoicePreview}
                         alt={invoice.name}
-                        className="max-h-48 rounded-sm border border-gray-200 object-contain bg-white"
+                        className="max-h-48 border border-[#ffd8a8] object-contain bg-white"
                       />
                     )}
                   </div>

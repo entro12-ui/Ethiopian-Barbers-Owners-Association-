@@ -32,7 +32,7 @@ export default function HealthSafety() {
             {topics.map((topic, i) => (
               <div
                 key={topic.title}
-                className="group flex items-start gap-3 p-4 bg-off-white rounded-sm hover:bg-gold/5 transition-colors"
+                className="group flex items-start gap-3 p-4 bg-[#fff0de] rounded-sm hover:bg-gold/10 border border-transparent hover:border-gold/30 transition-colors"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="w-10 h-10 bg-gold/10 rounded-sm flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors">

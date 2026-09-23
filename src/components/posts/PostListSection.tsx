@@ -53,9 +53,9 @@ export default function PostListSection({
   if (!isLoading && posts.length === 0) return null;
 
   return (
-    <section id={id} className={`py-16 md:py-20 ${light ? "bg-charcoal" : "bg-off-white"}`}>
+    <section id={id} className={`py-16 md:py-20 ${light ? "bg-[#fff0de]" : "bg-off-white"}`}>
       <div className="container mx-auto px-4 lg:px-8">
-        <SectionHeading title={copy.title} subtitle={copy.subtitle} light={light} />
+        <SectionHeading title={copy.title} subtitle={copy.subtitle} />
         {isLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (

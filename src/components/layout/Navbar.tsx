@@ -17,6 +17,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const isHome = pathname === "/";
+  const solidNav = isScrolled || !isHome || isMobileOpen;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -44,10 +45,15 @@ export default function Navbar() {
     const isAnchor = link.href.includes("#");
     const className = mobile
       ? cn(
-          "text-left px-4 py-3 text-lg text-gray-300 hover:text-gold hover:bg-white/5 rounded-sm transition-all",
+          "text-left px-4 py-3 text-lg text-charcoal hover:text-gold hover:bg-gold/10 rounded-sm transition-all",
           isMobileOpen && "animate-fade-in"
         )
-      : "px-3 py-2 text-sm text-gray-300 hover:text-gold transition-colors whitespace-nowrap";
+      : cn(
+          "px-3 py-2 text-sm transition-colors whitespace-nowrap font-medium",
+          solidNav
+            ? "text-charcoal/85 hover:text-gold"
+            : "text-white/90 hover:text-gold-light"
+        );
 
     if (isAnchor) {
       if (isHome) {
@@ -79,8 +85,8 @@ export default function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled || !isHome
-          ? "bg-charcoal/95 backdrop-blur-md shadow-lg shadow-black/20"
+        solidNav
+          ? "bg-white/90 backdrop-blur-md shadow-md shadow-charcoal/5 border-b border-[#ffd8a8]"
           : "bg-transparent"
       )}
     >
@@ -96,12 +102,6 @@ export default function Navbar() {
 
           <div className="hidden xl:flex items-center gap-3">
             <LanguageSwitcher />
-            <Link
-              href="/admin/login"
-              className="px-3 py-2 text-sm text-gray-300 hover:text-gold transition-colors whitespace-nowrap"
-            >
-              {t.nav.adminLogin}
-            </Link>
             <Link href="/membership">
               <Button size="sm">{t.nav.joinUs}</Button>
             </Link>
@@ -111,7 +111,10 @@ export default function Navbar() {
             <LanguageSwitcher />
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="p-2 text-white hover:text-gold transition-colors"
+              className={cn(
+                "p-2 transition-colors",
+                solidNav ? "text-charcoal hover:text-gold" : "text-white hover:text-gold-light"
+              )}
               aria-label={isMobileOpen ? t.nav.closeMenu : t.nav.openMenu}
               aria-expanded={isMobileOpen}
             >
@@ -136,7 +139,7 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "xl:hidden fixed inset-0 top-16 bg-charcoal/98 backdrop-blur-lg transition-all duration-300 overflow-y-auto",
+          "xl:hidden fixed inset-0 top-16 bg-white/98 backdrop-blur-lg transition-all duration-300 overflow-y-auto border-t border-[#ffd8a8]",
           isMobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         )}
       >
@@ -150,13 +153,6 @@ export default function Navbar() {
           <div className="mt-4 px-4 space-y-3">
             <Link href="/membership" onClick={() => setIsMobileOpen(false)}>
               <Button className="w-full">{t.nav.joinUs}</Button>
-            </Link>
-            <Link
-              href="/admin/login"
-              onClick={() => setIsMobileOpen(false)}
-              className="block text-center px-4 py-3 text-gray-300 hover:text-gold hover:bg-white/5 rounded-sm transition-all"
-            >
-              {t.nav.adminLogin}
             </Link>
           </div>
         </div>
