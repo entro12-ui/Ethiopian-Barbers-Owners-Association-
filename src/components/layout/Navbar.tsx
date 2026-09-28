@@ -32,6 +32,10 @@ export default function Navbar() {
     };
   }, [isMobileOpen]);
 
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
   const handleAnchorClick = (href: string) => {
     setIsMobileOpen(false);
     const id = href.replace("/#", "").replace("#", "");
@@ -44,10 +48,7 @@ export default function Navbar() {
     const label = t.nav[link.key];
     const isAnchor = link.href.includes("#");
     const className = mobile
-      ? cn(
-          "text-left px-4 py-3 text-lg text-charcoal hover:text-gold hover:bg-gold/10 rounded-sm transition-all",
-          isMobileOpen && "animate-fade-in"
-        )
+      ? "block w-full text-left px-4 py-3.5 text-lg text-charcoal hover:text-gold hover:bg-gold/10 rounded-sm transition-all"
       : cn(
           "px-3 py-2 text-sm transition-colors whitespace-nowrap font-medium",
           solidNav
@@ -60,6 +61,7 @@ export default function Navbar() {
         return (
           <button
             key={link.href}
+            type="button"
             onClick={() => handleAnchorClick(link.href)}
             className={className}
           >
@@ -68,95 +70,124 @@ export default function Navbar() {
         );
       }
       return (
-        <Link key={link.href} href={link.href} className={className} onClick={() => setIsMobileOpen(false)}>
+        <Link
+          key={link.href}
+          href={link.href}
+          className={className}
+          onClick={() => setIsMobileOpen(false)}
+        >
           {label}
         </Link>
       );
     }
 
     return (
-      <Link key={link.href} href={link.href} className={className} onClick={() => setIsMobileOpen(false)}>
+      <Link
+        key={link.href}
+        href={link.href}
+        className={className}
+        onClick={() => setIsMobileOpen(false)}
+      >
         {label}
       </Link>
     );
   };
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        solidNav
-          ? "bg-white/90 backdrop-blur-md shadow-md shadow-charcoal/5 border-b border-[#ffd8a8]"
-          : "bg-transparent"
-      )}
-    >
-      <nav className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/#home" className="group" aria-label={t.nav.goHome}>
-            <Logo size="md" priority alt={t.site.logoAlt} className="group-hover:scale-[1.02] transition-transform" />
-          </Link>
-
-          <div className="hidden xl:flex items-center gap-1">
-            {NAV_LINKS.map((link) => renderNavItem(link))}
-          </div>
-
-          <div className="hidden xl:flex items-center gap-3">
-            <LanguageSwitcher />
-            <Link href="/membership">
-              <Button size="sm">{t.nav.joinUs}</Button>
-            </Link>
-          </div>
-
-          <div className="xl:hidden flex items-center gap-2">
-            <LanguageSwitcher />
-            <button
-              onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className={cn(
-                "p-2 transition-colors",
-                solidNav ? "text-charcoal hover:text-gold" : "text-white hover:text-gold-light"
-              )}
-              aria-label={isMobileOpen ? t.nav.closeMenu : t.nav.openMenu}
-              aria-expanded={isMobileOpen}
-            >
-              <div className="relative w-6 h-6">
-                <Menu
-                  className={cn(
-                    "w-6 h-6 absolute inset-0 transition-all duration-300",
-                    isMobileOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
-                  )}
+    <>
+      <header className="fixed top-0 left-0 right-0 z-[100]">
+        <div
+          className={cn(
+            "transition-all duration-300",
+            solidNav
+              ? "bg-white/95 backdrop-blur-md shadow-md shadow-charcoal/5 border-b border-[#ffd8a8]"
+              : "bg-transparent"
+          )}
+        >
+          <nav className="container mx-auto px-4 lg:px-8">
+            <div className="flex items-center justify-between h-16 md:h-20">
+              <Link href="/#home" className="group" aria-label={t.nav.goHome}>
+                <Logo
+                  size="md"
+                  priority
+                  alt={t.site.logoAlt}
+                  className="group-hover:scale-[1.02] transition-transform"
                 />
-                <X
-                  className={cn(
-                    "w-6 h-6 absolute inset-0 transition-all duration-300",
-                    isMobileOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
-                  )}
-                />
+              </Link>
+
+              <div className="hidden xl:flex items-center gap-1">
+                {NAV_LINKS.map((link) => renderNavItem(link))}
               </div>
-            </button>
-          </div>
-        </div>
-      </nav>
 
-      <div
-        className={cn(
-          "xl:hidden fixed inset-0 top-16 bg-white/98 backdrop-blur-lg transition-all duration-300 overflow-y-auto border-t border-[#ffd8a8]",
-          isMobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
-        )}
-      >
-        <div className="container mx-auto px-4 py-6 flex flex-col gap-1">
-          {NAV_LINKS.map((link, i) => (
-            <div key={link.href} style={{ animationDelay: `${i * 50}ms` }}>
-              {renderNavItem(link, true)}
+              <div className="hidden xl:flex items-center gap-3">
+                <LanguageSwitcher />
+                <Link href="/membership">
+                  <Button size="sm">{t.nav.joinUs}</Button>
+                </Link>
+              </div>
+
+              <div className="xl:hidden flex items-center gap-2">
+                <LanguageSwitcher />
+                <button
+                  type="button"
+                  onClick={() => setIsMobileOpen((open) => !open)}
+                  className={cn(
+                    "relative z-[110] p-2 transition-colors",
+                    solidNav || isMobileOpen
+                      ? "text-charcoal hover:text-gold"
+                      : "text-white hover:text-gold-light"
+                  )}
+                  aria-label={isMobileOpen ? t.nav.closeMenu : t.nav.openMenu}
+                  aria-expanded={isMobileOpen}
+                  aria-controls="mobile-nav-menu"
+                >
+                  <div className="relative w-6 h-6">
+                    <Menu
+                      className={cn(
+                        "w-6 h-6 absolute inset-0 transition-all duration-300",
+                        isMobileOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
+                      )}
+                    />
+                    <X
+                      className={cn(
+                        "w-6 h-6 absolute inset-0 transition-all duration-300",
+                        isMobileOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
+                      )}
+                    />
+                  </div>
+                </button>
+              </div>
             </div>
-          ))}
-          <LanguageSwitcher variant="menu" />
-          <div className="mt-4 px-4 space-y-3">
-            <Link href="/membership" onClick={() => setIsMobileOpen(false)}>
-              <Button className="w-full">{t.nav.joinUs}</Button>
-            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Outside blurred header so position:fixed is not clipped */}
+      <div
+        id="mobile-nav-menu"
+        className={cn(
+          "xl:hidden fixed inset-0 z-[90] bg-white transition-opacity duration-300",
+          isMobileOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        )}
+        aria-hidden={!isMobileOpen}
+      >
+        <div className="h-16 md:h-20 shrink-0" aria-hidden="true" />
+        <div className="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain border-t border-[#ffd8a8] bg-white">
+          <div className="container mx-auto px-4 py-6 flex flex-col gap-1">
+            {NAV_LINKS.map((link) => (
+              <div key={link.href}>{renderNavItem(link, true)}</div>
+            ))}
+            <LanguageSwitcher variant="menu" />
+            <div className="mt-4 px-4 pb-8">
+              <Link href="/membership" onClick={() => setIsMobileOpen(false)}>
+                <Button className="w-full">{t.nav.joinUs}</Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
