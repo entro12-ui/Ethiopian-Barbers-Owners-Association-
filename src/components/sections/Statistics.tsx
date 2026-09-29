@@ -3,6 +3,7 @@
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { useEffect, useState } from "react";
 
 interface StatItem {
@@ -17,6 +18,7 @@ const defaultStats: StatItem[] = [
 
 export default function Statistics() {
   const { t } = useI18n();
+  const statistics = useCmsSection("statistics", t.statistics);
   const [stats, setStats] = useState<StatItem[]>(defaultStats);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,10 +60,10 @@ export default function Statistics() {
       <div className="container mx-auto px-4 lg:px-8 relative">
         <AnimatedCard className="text-center mb-12">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-            {t.statistics.title}
+            {statistics.title}
           </h2>
           <p className="text-white/75 max-w-2xl mx-auto">
-            {t.statistics.subtitle}
+            {statistics.subtitle}
           </p>
         </AnimatedCard>
 
@@ -70,7 +72,7 @@ export default function Statistics() {
             <AnimatedCounter
               key={stat.key}
               value={isLoading ? 0 : stat.value}
-              label={t.statistics[stat.key]}
+              label={statistics[stat.key]}
             />
           ))}
         </div>

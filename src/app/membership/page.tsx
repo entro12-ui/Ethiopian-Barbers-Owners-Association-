@@ -7,8 +7,9 @@ import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useSiteContent } from "@/components/i18n/SiteContentProvider";
 import { useToast } from "@/hooks/useToast";
-import { MEMBERSHIP_PAYMENT, telegramInvoiceBotDeepLink } from "@/lib/constants";
+import { telegramInvoiceBotDeepLink } from "@/lib/constants";
 import { interpolate } from "@/lib/i18n";
 import { ALLOWED_INVOICE_TYPES, MAX_FILE_SIZE } from "@/lib/membership";
 import { createMembershipFormSchema, MembershipFormData } from "@/lib/validations";
@@ -52,6 +53,7 @@ function StepLabel({ step, label }: { step: number; label: string }) {
 
 export default function MembershipPage() {
   const { locale, t } = useI18n();
+  const { membershipPayment } = useSiteContent();
   const { toasts, showToast, dismissToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -82,7 +84,7 @@ export default function MembershipPage() {
 
   const selectedLevel = watch("membershipLevel") as MembershipLevel;
   const selectedType = watch("applicantType") as ApplicantType;
-  const amountDue = MEMBERSHIP_PAYMENT.fees[selectedLevel];
+  const amountDue = membershipPayment.fees[selectedLevel];
 
   useEffect(() => {
     if (!invoice || !invoice.type.startsWith("image/")) {
@@ -447,7 +449,7 @@ export default function MembershipPage() {
                         {levelLabel(level)}
                       </span>
                       <span className="block mt-1 text-lg font-bold text-gold tabular-nums">
-                        {MEMBERSHIP_PAYMENT.fees[level]}
+                        {membershipPayment.fees[level]}
                       </span>
                       <span className="block mt-2 text-xs text-[#1a5a6e] leading-snug">
                         {levelBenefit(level)}
@@ -543,26 +545,26 @@ export default function MembershipPage() {
                     <p>
                       <span className="text-[#1a5a6e]">{t.membership.bankName}:</span>{" "}
                       <span className="font-medium text-charcoal">
-                        {MEMBERSHIP_PAYMENT.bankName}
+                        {membershipPayment.bankName}
                       </span>
                     </p>
                     <p>
                       <span className="text-[#1a5a6e]">{t.membership.accountName}:</span>{" "}
                       <span className="font-medium text-charcoal">
-                        {MEMBERSHIP_PAYMENT.accountName}
+                        {membershipPayment.accountName}
                       </span>
                     </p>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p>
                         <span className="text-[#1a5a6e]">{t.membership.accountNumber}:</span>{" "}
                         <span className="font-semibold text-charcoal tracking-wide">
-                          {MEMBERSHIP_PAYMENT.accountNumber}
+                          {membershipPayment.accountNumber}
                         </span>
                       </p>
                       <button
                         type="button"
                         onClick={() =>
-                          copyValue("account", MEMBERSHIP_PAYMENT.accountNumber)
+                          copyValue("account", membershipPayment.accountNumber)
                         }
                         className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 border border-[#ffd8a8] bg-white text-charcoal hover:border-gold transition-colors"
                       >
@@ -580,12 +582,12 @@ export default function MembershipPage() {
                     <p>
                       <span className="text-[#1a5a6e]">{t.membership.telebirr}:</span>{" "}
                       <span className="font-semibold text-charcoal tracking-wide">
-                        {MEMBERSHIP_PAYMENT.telebirr}
+                        {membershipPayment.telebirr}
                       </span>
                     </p>
                     <button
                       type="button"
-                      onClick={() => copyValue("telebirr", MEMBERSHIP_PAYMENT.telebirr)}
+                      onClick={() => copyValue("telebirr", membershipPayment.telebirr)}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 border border-[#ffd8a8] bg-white text-charcoal hover:border-gold transition-colors"
                     >
                       {copiedField === "telebirr" ? (

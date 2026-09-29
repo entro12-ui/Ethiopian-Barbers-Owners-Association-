@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import MembershipQueue from "@/components/admin/MembershipQueue";
+import SiteContentEditor from "@/components/admin/SiteContentEditor";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useToast } from "@/hooks/useToast";
 import { playPendingChime } from "@/lib/pending-notify";
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
-  const [section, setSection] = useState<"posts" | "memberships">("posts");
+  const [section, setSection] = useState<"posts" | "memberships" | "content">("posts");
   const [pendingCount, setPendingCount] = useState(0);
   const [unseenPending, setUnseenPending] = useState(0);
   const [highlightIds, setHighlightIds] = useState<string[]>([]);
@@ -194,7 +195,11 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-xl font-bold">EBOA Admin</h1>
             <p className="text-gray-400 text-sm">
-              {section === "memberships" ? "Review membership applications" : "Manage events, jobs, and announcements"}
+              {section === "memberships"
+                ? "Review membership applications"
+                : section === "content"
+                  ? "Edit homepage and contact content"
+                  : "Manage events, jobs, and announcements"}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -234,7 +239,7 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 lg:px-8 py-8">
         <div className="flex flex-wrap gap-2 mb-6">
-          {(["posts", "memberships"] as const).map((item) => (
+          {(["posts", "memberships", "content"] as const).map((item) => (
             <button
               key={item}
               onClick={() => setSection(item)}
@@ -244,7 +249,7 @@ export default function AdminDashboard() {
                   : "bg-white text-gray-600 border border-gray-200 hover:border-gold"
               }`}
             >
-              {item}
+              {item === "content" ? "Site content" : item}
               {item === "memberships" && pendingCount > 0 && (
                 <span
                   className={`absolute -top-2 -right-2 min-w-[1.25rem] h-5 px-1 rounded-full text-[11px] font-bold flex items-center justify-center ${
@@ -267,6 +272,8 @@ export default function AdminDashboard() {
             refreshKey={listRefreshKey}
             onReviewPending={() => setUnseenPending(0)}
           />
+        ) : section === "content" ? (
+          <SiteContentEditor onMessage={showToast} />
         ) : (
         <>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
+import { SiteContentProvider } from "@/components/i18n/SiteContentProvider";
 import { defaultMetadata } from "@/lib/seo";
 import "./globals.css";
 
@@ -34,7 +35,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <SiteContentProvider>{children}</SiteContentProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

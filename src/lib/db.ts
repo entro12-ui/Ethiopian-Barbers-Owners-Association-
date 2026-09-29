@@ -155,6 +155,14 @@ export async function initializeDatabase(): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
       CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published_at DESC);
       CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+
+      CREATE TABLE IF NOT EXISTS site_content (
+        key TEXT NOT NULL,
+        locale TEXT NOT NULL,
+        payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (key, locale)
+      );
     `);
 
     await client.query(`
@@ -179,6 +187,13 @@ export async function initializeDatabase(): Promise<void> {
         WHERE membership_id IS NOT NULL;
       CREATE UNIQUE INDEX IF NOT EXISTS idx_application_documents_type
         ON application_documents(application_id, document_type);
+      CREATE TABLE IF NOT EXISTS site_content (
+        key TEXT NOT NULL,
+        locale TEXT NOT NULL,
+        payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (key, locale)
+      );
     `).catch(() => {});
 
     initialized = true;

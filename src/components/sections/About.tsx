@@ -3,20 +3,22 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { imagePath } from "@/lib/constants";
 import { Eye, Target } from "lucide-react";
 import Image from "next/image";
 
 export default function About() {
   const { t } = useI18n();
+  const about = useCmsSection("about", t.about);
 
   return (
     <section id="about" className="py-20 md:py-28 bg-off-white relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.about.title}
-          subtitle={t.about.subtitle}
+          title={about.title}
+          subtitle={about.subtitle}
         />
 
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
@@ -24,7 +26,7 @@ export default function About() {
             <div className="relative aspect-[4/3] rounded-sm overflow-hidden shadow-2xl shadow-charcoal/15 ring-1 ring-gold/30 group">
               <Image
                 src={imagePath("photo_2026-08-31_14-39-10.jpg")}
-                alt={t.about.imageAlt}
+                alt={about.imageAlt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -37,15 +39,15 @@ export default function About() {
           <AnimatedCard delay={200}>
             <div className="space-y-6">
               <p className="text-[#1a5a6e] text-lg leading-relaxed">
-                {t.about.paragraph1}
+                {about.paragraph1}
               </p>
               <p className="text-[#1a5a6e] leading-relaxed">
-                {t.about.paragraph2}
+                {about.paragraph2}
               </p>
               <div className="flex items-center gap-4 pt-4">
                 <div className="w-16 h-1 rounded-full bg-gradient-to-r from-gold to-brown" />
                 <span className="text-gold font-semibold tracking-wider text-sm uppercase">
-                  {t.about.established}
+                  {about.established}
                 </span>
               </div>
             </div>
@@ -58,9 +60,9 @@ export default function About() {
               <div className="w-14 h-14 bg-gradient-to-br from-gold/20 to-brown/15 rounded-sm flex items-center justify-center mb-6 group-hover:from-gold/30 group-hover:to-brown/25 transition-colors">
                 <Eye className="w-7 h-7 text-gold" />
               </div>
-              <h3 className="text-2xl font-bold text-charcoal mb-4">{t.about.visionTitle}</h3>
+              <h3 className="text-2xl font-bold text-charcoal mb-4">{about.visionTitle}</h3>
               <p className="text-[#1a5a6e] leading-relaxed">
-                {t.about.vision}
+                {about.vision}
               </p>
             </div>
           </AnimatedCard>
@@ -70,9 +72,9 @@ export default function About() {
               <div className="w-14 h-14 bg-gold/25 rounded-sm flex items-center justify-center mb-6 group-hover:bg-gold/35 transition-colors">
                 <Target className="w-7 h-7 text-gold-light" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{t.about.missionTitle}</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">{about.missionTitle}</h3>
               <p className="text-white/80 leading-relaxed">
-                {t.about.mission}
+                {about.mission}
               </p>
             </div>
           </AnimatedCard>

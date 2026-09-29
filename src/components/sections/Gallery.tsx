@@ -3,6 +3,7 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { GALLERY_CATEGORIES, GALLERY_ITEMS, imagePath, type GalleryCategoryKey } from "@/lib/constants";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -11,6 +12,12 @@ import { cn } from "@/lib/utils";
 
 export default function Gallery() {
   const { t } = useI18n();
+  const gallery = useCmsSection("gallery", {
+    title: t.gallery.title,
+    subtitle: t.gallery.subtitle,
+    categories: t.gallery.categories,
+  });
+  const categories = gallery.categories ?? t.gallery.categories;
   const [activeCategory, setActiveCategory] = useState<GalleryCategoryKey>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -57,8 +64,8 @@ export default function Gallery() {
       <div className="absolute -left-20 top-40 w-64 h-64 bg-brown/15 rounded-full blur-3xl pointer-events-none" />
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.gallery.title}
-          subtitle={t.gallery.subtitle}
+          title={gallery.title as string}
+          subtitle={gallery.subtitle as string}
         />
 
         <AnimatedCard className="mb-10">
@@ -74,7 +81,7 @@ export default function Gallery() {
                     : "bg-white text-[#1a5a6e] hover:bg-gold/10 border border-[#ffd8a8] hover:border-gold/50"
                 )}
               >
-                {t.gallery.categories[category]}
+                {categories[category]}
               </button>
             ))}
           </div>
@@ -97,7 +104,7 @@ export default function Gallery() {
                 <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/40 transition-colors duration-300 flex items-end">
                   <div className="p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                     <span className="text-xs text-gold font-semibold uppercase tracking-wider">
-                      {t.gallery.categories[item.category]}
+                      {categories[item.category]}
                     </span>
                   </div>
                 </div>
@@ -149,7 +156,7 @@ export default function Gallery() {
             />
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-charcoal/80 to-transparent">
               <p className="text-white text-sm">{t.gallery.alts[filteredItems[lightboxIndex].altKey]}</p>
-              <p className="text-gold text-xs mt-1">{t.gallery.categories[filteredItems[lightboxIndex].category]}</p>
+              <p className="text-gold text-xs mt-1">{categories[filteredItems[lightboxIndex].category]}</p>
             </div>
           </div>
         </div>

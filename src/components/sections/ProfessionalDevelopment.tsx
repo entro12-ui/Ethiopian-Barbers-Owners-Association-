@@ -4,37 +4,39 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { Scissors, Sparkles, Smile, Cpu, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export default function ProfessionalDevelopment() {
   const { t } = useI18n();
+  const development = useCmsSection("development", t.development);
 
   const features = [
     {
       icon: Scissors,
-      title: t.development.features.modernHairStyling.title,
-      description: t.development.features.modernHairStyling.description,
+      title: development.features.modernHairStyling.title,
+      description: development.features.modernHairStyling.description,
     },
     {
       icon: Sparkles,
-      title: t.development.features.beardGrooming.title,
-      description: t.development.features.beardGrooming.description,
+      title: development.features.beardGrooming.title,
+      description: development.features.beardGrooming.description,
     },
     {
       icon: Smile,
-      title: t.development.features.facialCare.title,
-      description: t.development.features.facialCare.description,
+      title: development.features.facialCare.title,
+      description: development.features.facialCare.description,
     },
     {
       icon: Cpu,
-      title: t.development.features.modernTechnology.title,
-      description: t.development.features.modernTechnology.description,
+      title: development.features.modernTechnology.title,
+      description: development.features.modernTechnology.description,
     },
     {
       icon: BookOpen,
-      title: t.development.features.professionalTraining.title,
-      description: t.development.features.professionalTraining.description,
+      title: development.features.professionalTraining.title,
+      description: development.features.professionalTraining.description,
     },
   ];
 
@@ -57,8 +59,8 @@ export default function ProfessionalDevelopment() {
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.development.title}
-          subtitle={t.development.subtitle}
+          title={development.title}
+          subtitle={development.subtitle}
         />
 
         <AnimatedCard className="mb-16">
@@ -81,7 +83,7 @@ export default function ProfessionalDevelopment() {
 
         <AnimatedCard delay={300} className="text-center">
           <Link href="/membership">
-            <Button size="lg">{t.development.becomeMember}</Button>
+            <Button size="lg">{development.becomeMember}</Button>
           </Link>
         </AnimatedCard>
       </div>

@@ -3,37 +3,39 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { Heart, Shield, GraduationCap, Scissors, Sparkles, Users, Wrench, Network } from "lucide-react";
 
 export default function Goals() {
   const { t } = useI18n();
+  const goalsCopy = useCmsSection("goals", t.goals);
 
   const goals = [
     {
       icon: Heart,
-      title: t.goals.items.healthcare.title,
-      description: t.goals.items.healthcare.description,
+      title: goalsCopy.items.healthcare.title,
+      description: goalsCopy.items.healthcare.description,
     },
     {
       icon: Shield,
-      title: t.goals.items.workplaceSafety.title,
-      description: t.goals.items.workplaceSafety.description,
+      title: goalsCopy.items.workplaceSafety.title,
+      description: goalsCopy.items.workplaceSafety.description,
     },
     {
       icon: GraduationCap,
-      title: t.goals.items.professionalDevelopment.title,
-      description: t.goals.items.professionalDevelopment.description,
+      title: goalsCopy.items.professionalDevelopment.title,
+      description: goalsCopy.items.professionalDevelopment.description,
     },
   ];
 
   const supporting = [
-    { icon: Scissors, label: t.goals.supporting.skillsDevelopment },
-    { icon: Sparkles, label: t.goals.supporting.modernTechniques },
-    { icon: Shield, label: t.goals.supporting.hygieneSanitation },
-    { icon: Heart, label: t.goals.supporting.occupationalHealth },
-    { icon: Wrench, label: t.goals.supporting.technologyAdoption },
-    { icon: Network, label: t.goals.supporting.professionalNetworking },
-    { icon: Users, label: t.goals.supporting.communityDevelopment },
+    { icon: Scissors, label: goalsCopy.supporting.skillsDevelopment },
+    { icon: Sparkles, label: goalsCopy.supporting.modernTechniques },
+    { icon: Shield, label: goalsCopy.supporting.hygieneSanitation },
+    { icon: Heart, label: goalsCopy.supporting.occupationalHealth },
+    { icon: Wrench, label: goalsCopy.supporting.technologyAdoption },
+    { icon: Network, label: goalsCopy.supporting.professionalNetworking },
+    { icon: Users, label: goalsCopy.supporting.communityDevelopment },
   ];
 
   return (
@@ -42,8 +44,8 @@ export default function Goals() {
       <div className="absolute right-0 bottom-10 w-48 h-48 bg-brown/20 rounded-full blur-3xl pointer-events-none" />
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.goals.title}
-          subtitle={t.goals.subtitle}
+          title={goalsCopy.title}
+          subtitle={goalsCopy.subtitle}
         />
 
         <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-16">

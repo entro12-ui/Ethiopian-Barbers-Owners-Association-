@@ -1,7 +1,7 @@
 "use client";
 
-import { CONTACT } from "@/lib/constants";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection, useSiteContent } from "@/components/i18n/SiteContentProvider";
 import { FacebookIcon, YoutubeIcon, TikTokIcon } from "@/components/ui/SocialIcons";
 import Logo from "@/components/ui/Logo";
 import { Mail, Phone, MapPin } from "lucide-react";
@@ -17,6 +17,10 @@ const FOOTER_LINKS = [
 
 export default function Footer() {
   const { t } = useI18n();
+  const contact = useCmsSection("contact", {
+    addressValue: t.contact.addressValue,
+  });
+  const { contactSettings } = useSiteContent();
 
   return (
     <footer className="bg-gradient-to-b from-[#fff0de] to-off-white text-[#1a5a6e] border-t border-[#ffd8a8]">
@@ -67,26 +71,26 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gold shrink-0" />
-                <a href={`tel:${CONTACT.phone}`} className="hover:text-gold transition-colors">
-                  {CONTACT.phone}
+                <a href={`tel:${contactSettings.phone}`} className="hover:text-gold transition-colors">
+                  {contactSettings.phone}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-gold shrink-0" />
-                <a href={`mailto:${CONTACT.email}`} className="hover:text-gold transition-colors">
-                  {CONTACT.email}
+                <a href={`mailto:${contactSettings.email}`} className="hover:text-gold transition-colors">
+                  {contactSettings.email}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
-                <span>{t.contact.addressValue}</span>
+                <span>{contact.addressValue as string}</span>
               </li>
             </ul>
             <div className="flex gap-3 mt-5">
               {[
-                { href: CONTACT.social.facebook, label: "Facebook", Icon: FacebookIcon },
-                { href: CONTACT.social.youtube, label: "YouTube", Icon: YoutubeIcon },
-                { href: CONTACT.social.tiktok, label: "TikTok", Icon: TikTokIcon },
+                { href: contactSettings.social.facebook, label: "Facebook", Icon: FacebookIcon },
+                { href: contactSettings.social.youtube, label: "YouTube", Icon: YoutubeIcon },
+                { href: contactSettings.social.tiktok, label: "TikTok", Icon: TikTokIcon },
               ].map(({ href, label, Icon }) => (
                 <a
                   key={label}

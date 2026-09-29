@@ -4,6 +4,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { imagePath } from "@/lib/constants";
 import { Scissors, Store, Camera } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +12,8 @@ import Link from "next/link";
 
 export default function Membership() {
   const { t } = useI18n();
-  const prepare = t.membershipSection.prepareItems;
+  const membershipSection = useCmsSection("membershipSection", t.membershipSection);
+  const prepare = membershipSection.prepareItems;
 
   const items = [
     { title: prepare.role.title, description: prepare.role.description, Icon: Scissors },
@@ -37,14 +39,14 @@ export default function Membership() {
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.membershipSection.title}
-          subtitle={t.membershipSection.subtitle}
+          title={membershipSection.title}
+          subtitle={membershipSection.subtitle}
           light
         />
 
         <AnimatedCard className="max-w-3xl mx-auto mb-10">
           <p className="text-center text-xs uppercase tracking-[0.2em] text-gold-light font-bold mb-6">
-            {t.membershipSection.prepareTitle}
+            {membershipSection.prepareTitle}
           </p>
           <div className="grid gap-6 sm:grid-cols-3">
             {items.map(({ title, description, Icon }, index) => (
@@ -65,11 +67,11 @@ export default function Membership() {
 
         <AnimatedCard className="text-center">
           <Link href="/membership">
-            <Button size="lg">{t.membershipSection.apply}</Button>
+            <Button size="lg">{membershipSection.apply}</Button>
           </Link>
           <div className="mt-4">
             <Link href="/membership/status" className="text-sm text-gold-light font-medium hover:underline">
-              {t.membershipSection.checkStatus}
+              {membershipSection.checkStatus}
             </Link>
           </div>
         </AnimatedCard>

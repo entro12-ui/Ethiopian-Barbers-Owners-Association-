@@ -5,7 +5,7 @@ import AnimatedCard from "@/components/ui/AnimatedCard";
 import Button from "@/components/ui/Button";
 import ToastContainer from "@/components/ui/ToastContainer";
 import { useI18n } from "@/components/i18n/LanguageProvider";
-import { CONTACT } from "@/lib/constants";
+import { useCmsSection, useSiteContent } from "@/components/i18n/SiteContentProvider";
 import { createContactFormSchema, ContactFormData } from "@/lib/validations";
 import { useToast } from "@/hooks/useToast";
 import { FacebookIcon, YoutubeIcon, TikTokIcon } from "@/components/ui/SocialIcons";
@@ -16,6 +16,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function Contact() {
   const { locale, t } = useI18n();
+  const contact = useCmsSection("contact", {
+    title: t.contact.title,
+    subtitle: t.contact.subtitle,
+    phone: t.contact.phone,
+    email: t.contact.email,
+    officeAddress: t.contact.officeAddress,
+    addressValue: t.contact.addressValue,
+    addressValueAmharic: t.contact.addressValueAmharic,
+    followUs: t.contact.followUs,
+    mapsOpen: t.contact.mapsOpen,
+    mapsTitle: t.contact.mapsTitle,
+    formTitle: t.contact.formTitle,
+  });
+  const { contactSettings } = useSiteContent();
   const { toasts, showToast, dismissToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const schema = useMemo(() => createContactFormSchema(t), [t]);
@@ -62,8 +76,8 @@ export default function Contact() {
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <SectionHeading
-          title={t.contact.title}
-          subtitle={t.contact.subtitle}
+          title={contact.title as string}
+          subtitle={contact.subtitle as string}
         />
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -74,9 +88,9 @@ export default function Contact() {
                   <Phone className="w-5 h-5 text-gold" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-charcoal mb-1">{t.contact.phone}</h3>
-                  <a href={`tel:${CONTACT.phone}`} className="text-gray-600 hover:text-gold transition-colors">
-                    {CONTACT.phone}
+                  <h3 className="font-semibold text-charcoal mb-1">{contact.phone as string}</h3>
+                  <a href={`tel:${contactSettings.phone}`} className="text-gray-600 hover:text-gold transition-colors">
+                    {contactSettings.phone}
                   </a>
                 </div>
               </div>
@@ -86,9 +100,9 @@ export default function Contact() {
                   <Mail className="w-5 h-5 text-gold" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-charcoal mb-1">{t.contact.email}</h3>
-                  <a href={`mailto:${CONTACT.email}`} className="text-gray-600 hover:text-gold transition-colors">
-                    {CONTACT.email}
+                  <h3 className="font-semibold text-charcoal mb-1">{contact.email as string}</h3>
+                  <a href={`mailto:${contactSettings.email}`} className="text-gray-600 hover:text-gold transition-colors">
+                    {contactSettings.email}
                   </a>
                 </div>
               </div>
@@ -98,17 +112,17 @@ export default function Contact() {
                   <MapPin className="w-5 h-5 text-gold" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-charcoal mb-1">{t.contact.officeAddress}</h3>
-                  <p className="text-gray-600">{t.contact.addressValue}</p>
-                  <p className="text-sm text-[#1a5a6e] mt-0.5">{t.contact.addressValueAmharic}</p>
+                  <h3 className="font-semibold text-charcoal mb-1">{contact.officeAddress as string}</h3>
+                  <p className="text-gray-600">{contact.addressValue as string}</p>
+                  <p className="text-sm text-[#1a5a6e] mt-0.5">{contact.addressValueAmharic as string}</p>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-semibold text-charcoal mb-4">{t.contact.followUs}</h3>
+                <h3 className="font-semibold text-charcoal mb-4">{contact.followUs as string}</h3>
                 <div className="flex gap-3">
                   <a
-                    href={CONTACT.social.facebook}
+                    href={contactSettings.social.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
@@ -117,7 +131,7 @@ export default function Contact() {
                     <FacebookIcon className="w-5 h-5" />
                   </a>
                   <a
-                    href={CONTACT.social.youtube}
+                    href={contactSettings.social.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
@@ -126,7 +140,7 @@ export default function Contact() {
                     <YoutubeIcon className="w-5 h-5" />
                   </a>
                   <a
-                    href={CONTACT.social.tiktok}
+                    href={contactSettings.social.tiktok}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-11 h-11 bg-gradient-to-br from-charcoal to-brown text-white rounded-sm flex items-center justify-center hover:from-gold hover:to-gold-light hover:text-charcoal transition-all shadow-sm"
@@ -140,8 +154,8 @@ export default function Contact() {
               <div className="rounded-sm overflow-hidden border border-[#ffd8a8] shadow-sm shadow-gold/10">
                 <div className="relative w-full h-56 md:h-64 bg-[#fff0de]">
                   <iframe
-                    title={t.contact.mapsTitle}
-                    src={CONTACT.mapEmbedUrl}
+                    title={contact.mapsTitle as string}
+                    src={contactSettings.mapEmbedUrl}
                     className="absolute inset-0 w-full h-full border-0"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
@@ -149,13 +163,13 @@ export default function Contact() {
                   />
                 </div>
                 <a
-                  href={CONTACT.mapLinkUrl}
+                  href={contactSettings.mapLinkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-white text-sm font-semibold text-charcoal hover:text-gold hover:bg-gold/10 transition-colors border-t border-[#ffd8a8]"
                 >
                   <MapPin className="w-4 h-4 text-gold" />
-                  {t.contact.mapsOpen}
+                  {contact.mapsOpen as string}
                 </a>
               </div>
             </div>
@@ -163,7 +177,7 @@ export default function Contact() {
 
           <AnimatedCard delay={200}>
             <form key={locale} onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 md:p-8 rounded-sm shadow-lg shadow-gold/10 border border-[#ffd8a8]">
-              <h3 className="font-display text-xl font-bold text-charcoal mb-6">{t.contact.formTitle}</h3>
+              <h3 className="font-display text-xl font-bold text-charcoal mb-6">{contact.formTitle as string}</h3>
 
               <div className="space-y-4">
                 <div>

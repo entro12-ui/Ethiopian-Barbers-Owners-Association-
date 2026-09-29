@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import { useI18n } from "@/components/i18n/LanguageProvider";
+import { useCmsSection } from "@/components/i18n/SiteContentProvider";
 import { imagePath } from "@/lib/constants";
 import { scrollToSection } from "@/lib/utils";
 import Link from "next/link";
@@ -10,13 +11,14 @@ import { ChevronDown } from "lucide-react";
 
 export default function Hero() {
   const { t } = useI18n();
+  const hero = useCmsSection("hero", t.hero);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src={imagePath("photo_2026-08-31_14-38-33.jpg")}
-          alt={t.hero.imageAlt}
+          alt={hero.imageAlt}
           fill
           priority
           className="object-cover scale-105"
@@ -35,36 +37,36 @@ export default function Hero() {
             EBOA
           </p>
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up drop-shadow-lg">
-            {t.hero.titleStart}
+            {hero.titleStart}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold to-[#ff7a00]">
-              {t.hero.titleHighlight}
+              {hero.titleHighlight}
             </span>
-            {t.hero.titleEnd}
+            {hero.titleEnd}
           </h1>
 
           <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 max-w-2xl animate-fade-in-up animation-delay-200">
-            {t.hero.subtitle}
+            {hero.subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
             <Link href="/membership">
-              <Button size="lg">{t.hero.join}</Button>
+              <Button size="lg">{hero.join}</Button>
             </Link>
             <Button
               variant="secondary"
               size="lg"
               onClick={() => scrollToSection("about")}
             >
-              {t.hero.learn}
+              {hero.learn}
             </Button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 pt-8 border-t border-gold/40 animate-fade-in-up animation-delay-600">
             {[
-              { label: t.hero.values.professionalism, icon: "✦" },
-              { label: t.hero.values.training, icon: "◈" },
-              { label: t.hero.values.health, icon: "♦" },
-              { label: t.hero.values.community, icon: "◆" },
+              { label: hero.values.professionalism, icon: "✦" },
+              { label: hero.values.training, icon: "◈" },
+              { label: hero.values.health, icon: "♦" },
+              { label: hero.values.community, icon: "◆" },
             ].map((item) => (
               <div key={item.label} className="text-center rounded-sm bg-white/10 backdrop-blur-sm border border-gold/35 py-3 px-2 hover:bg-gold/15 hover:border-gold/60 transition-all duration-300">
                 <span className="text-gold-light text-xl">{item.icon}</span>
@@ -78,7 +80,7 @@ export default function Hero() {
       <button
         onClick={() => scrollToSection("about")}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gold-light hover:text-white transition-colors animate-bounce"
-        aria-label={t.hero.scrollAbout}
+        aria-label={hero.scrollAbout}
       >
         <ChevronDown className="w-8 h-8 drop-shadow" />
       </button>
